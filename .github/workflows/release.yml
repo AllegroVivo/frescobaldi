@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
       - name: Install dependencies
@@ -53,9 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ["Windows"]
-        # macOS disabled until we have a new certificate
-        #target: ["Windows", "macOS", "macOS-Intel"]
+        target: ["Windows", "macOS", "macOS-Intel"]
         include:
           - target: "Windows"
             platform: "windows"
@@ -63,23 +61,23 @@ jobs:
             runs-on: "windows-latest"
             filename: dist/*.msi
 
-          # - target: "macOS"
-          #   platform: "macOS"
-          #   output-format: "app"
-          #   runs-on: "macos-latest"
-          #   briefcase-package-args: '--identity "$CERTIFICATE_ID"'
-          #   filename: dist/*.dmg
+          - target: "macOS"
+            platform: "macOS"
+            output-format: "app"
+            runs-on: "macos-latest"
+            briefcase-package-args: '--identity "$CERTIFICATE_ID"'
+            filename: dist/*.dmg
 
-          # - target: "macOS-Intel"
-          #   platform: "macOS"
-          #   output-format: "app"
-          #   runs-on: "macos-latest"
-          #   briefcase-package-args: '--identity "$CERTIFICATE_ID"'
-          #   filename: dist/*.dmg
+          - target: "macOS-Intel"
+            platform: "macOS"
+            output-format: "app"
+            runs-on: "macos-latest"
+            briefcase-package-args: '--identity "$CERTIFICATE_ID"'
+            filename: dist/*.dmg
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Import signing certificate on macOS
         if: ${{ (matrix.target == 'macOS') || (matrix.target == 'macOS-Intel') }}
@@ -113,7 +111,7 @@ jobs:
           xcrun notarytool store-credentials "briefcase-macOS-$TEAM_ID" --apple-id "$APPLE_ID" --team-id $TEAM_ID --password $BRIEFCASE_PASSWORD
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -172,7 +170,7 @@ jobs:
           mv dist/Frescobaldi-$VERSION.dmg dist/Frescobaldi-$VERSION-Intel.dmg
 
       - name: Upload Frescobaldi
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frescobaldi-${{ matrix.target }}
           path: dist
@@ -180,7 +178,7 @@ jobs:
 
       - name: Upload Log
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log-Failure-${{ matrix.target }}
           path: logs/*
