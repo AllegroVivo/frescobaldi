@@ -29,13 +29,13 @@ import platform
 import importlib.util
 import weakref
 
-from PyQt6.QtCore import QObject, QSettings, Qt, QThread, QStandardPaths
-from PyQt6.QtWidgets import QApplication, QMenuBar
+from PySide6.QtCore import QObject, QSettings, Qt, QThread, QStandardPaths
+from PySide6.QtWidgets import QApplication, QMenuBar
 
 ### needed for QWebEngine
 ### it wants those two things be done before constructing QApplication()
-if importlib.util.find_spec('PyQt6.QtWebEngineWidgets'):
-    import PyQt6.QtWebEngineWidgets
+if importlib.util.find_spec('PySide6.QtWebEngineWidgets'):
+    import PySide6.QtWebEngineWidgets
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts, True)
 ### end needed for QWebEngine
 
@@ -316,7 +316,7 @@ def editor_font(requested_family=None):
     """
     global _editor_font
     if requested_family or _editor_font is None:
-        from PyQt6.QtGui import QFontDatabase
+        from PySide6.QtGui import QFontDatabase
         available_families = QFontDatabase.families()
     if _editor_font is None:
         # This is always a safe choice but not necessarily the best available

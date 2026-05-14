@@ -45,8 +45,8 @@ currently set shortcuts for an action using shortcuts().
 
 import weakref
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QAction, QKeySequence
 
 import app
 

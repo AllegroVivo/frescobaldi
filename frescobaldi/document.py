@@ -35,9 +35,9 @@ document to a job.lilypond.LilyPondJob without implicitly creating a tab.
 
 import os
 
-from PyQt6.QtCore import QTimer, QUrl
-from PyQt6.QtGui import QTextCursor, QTextDocument
-from PyQt6.QtWidgets import QPlainTextDocumentLayout
+from PySide6.QtCore import QTimer, QUrl
+from PySide6.QtGui import QTextCursor, QTextDocument
+from PySide6.QtWidgets import QPlainTextDocumentLayout
 
 import app
 import util

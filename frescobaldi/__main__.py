@@ -38,9 +38,9 @@ import os
 import platform
 import re
 
-from PyQt6.QtCore import QSettings, QTimer, QUrl
-from PyQt6.QtGui import QTextCursor
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QSettings, QTimer, QUrl
+from PySide6.QtGui import QTextCursor
+from PySide6.QtWidgets import QApplication
 
 import appinfo          # Information about our application
 import app              # Instantiate global signals etc
@@ -153,7 +153,7 @@ def check_ly():
     else:
         if version >= appinfo.required_python_ly_version:
             return
-    from PyQt6.QtWidgets import QMessageBox
+    from PySide6.QtWidgets import QMessageBox
     QMessageBox.critical(None, _("Can't run Frescobaldi"), _(
         "We are sorry, but Frescobaldi can't run properly.\n\n"
         "The python-ly package is not available or too old.\n"

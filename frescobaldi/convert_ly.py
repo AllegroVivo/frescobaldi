@@ -28,11 +28,12 @@ import os
 import platform
 import sys
 
-from PyQt6.QtCore import QSettings, QSize
-from PyQt6.QtGui import QFont, QTextCursor
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QSettings, QSize
+from PySide6.QtGui import QFont, QTextCursor
+from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QGridLayout, QLabel, QLineEdit, QTabWidget, QTextBrowser, QVBoxLayout)
+    QGridLayout, QLabel, QLineEdit, QTabWidget, QTextBrowser, QVBoxLayout
+)
 
 import app
 import job

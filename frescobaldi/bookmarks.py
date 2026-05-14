@@ -32,7 +32,7 @@ and 'error' (marking a line containing an error).
 import bisect
 import json
 
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 
 import metainfo
 import signals

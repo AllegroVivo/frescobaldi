@@ -26,11 +26,12 @@ import collections
 import os
 import tempfile
 
-from PyQt6.QtCore import QEvent, QSettings, QSize, Qt
-from PyQt6.QtGui import QBitmap, QColor, QDoubleValidator, QImage, QRegion
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QEvent, QSettings, QSize, Qt
+from PySide6.QtGui import QBitmap, QColor, QDoubleValidator, QImage, QRegion
+from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
-    QGridLayout, QHBoxLayout, QLabel, QMessageBox, QPushButton, QVBoxLayout)
+    QGridLayout, QHBoxLayout, QLabel, QMessageBox, QPushButton, QVBoxLayout
+)
 
 import app
 import util

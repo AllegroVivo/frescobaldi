@@ -24,8 +24,8 @@ A simple persistent completion model (e.g. for QLineEdits).
 import atexit
 import weakref
 
-from PyQt6.QtCore import QSettings, QStringListModel, QTimer
-from PyQt6.QtWidgets import QCompleter
+from PySide6.QtCore import QSettings, QStringListModel, QTimer
+from PySide6.QtWidgets import QCompleter
 
 import qsettings # for safely retrieving list of strings
 

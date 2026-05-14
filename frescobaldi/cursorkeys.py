@@ -24,7 +24,7 @@ Install the global handler as an event filter for a Q(Plain)TextEdit.
 
 """
 
-from PyQt6.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 
 import app

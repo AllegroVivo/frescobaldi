@@ -66,5 +66,5 @@ main(debug=True)
 
 # be friendly and import Qt stuff
 # suppress ruff F403 lint check
-from PyQt6.QtCore import *  # noqa: F403
-from PyQt6.QtGui import *  # noqa: F403
+from PySide6.QtCore import *  # noqa: F403
+from PySide6.QtGui import *  # noqa: F403

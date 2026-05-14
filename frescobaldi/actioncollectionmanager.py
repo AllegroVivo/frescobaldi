@@ -28,7 +28,7 @@ actions conflict with other actions.
 
 import weakref
 
-from PyQt6.QtGui import QKeySequence
+from PySide6.QtGui import QKeySequence
 
 import actioncollection
 import plugin

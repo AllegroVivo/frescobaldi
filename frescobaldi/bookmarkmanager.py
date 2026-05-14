@@ -22,8 +22,8 @@ Manages the actions that manipulate the bookmarks (see also bookmarks.py).
 """
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QKeySequence
 
 import actioncollection
 import actioncollectionmanager

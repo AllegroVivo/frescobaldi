@@ -22,8 +22,8 @@ Manages some actions and per-document preferences that are set in metainfo.
 """
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QKeySequence
 
 import actioncollection
 import actioncollectionmanager

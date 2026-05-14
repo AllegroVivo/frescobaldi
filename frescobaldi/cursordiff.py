@@ -28,7 +28,7 @@ text, and applying that diff.
 
 import difflib
 
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 
 import cursortools
 
