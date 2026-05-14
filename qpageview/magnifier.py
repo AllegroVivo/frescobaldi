@@ -1,0 +1,337 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of the qpageview package.
+#
+# Copyright (c) 2010 - 2019 by Wilbert Berendsen
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# See http://www.gnu.org/licenses/ for more information.
+
+
+"""
+The Magnifier magnifies a part of the displayed document.
+"""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal, Union, Optional, Callable
+
+from PySide6.QtCore import QEvent, Qt, QPoint
+from PySide6.QtGui import (
+    QColor, QCursor, QPainter, QPalette, QPen, QRegion, QTransform,
+    QResizeEvent, QMoveEvent, QMouseEvent, QWheelEvent, QPaintEvent
+)
+from PySide6.QtWidgets import QWidget
+
+if TYPE_CHECKING:
+    from . import View
+    from .page import AbstractPage
+
+DRAG_SHORT = 1      # visible only while keeping the mouse button pressed
+DRAG_LONG  = 2      # remain visible and drag when picked up with the mouse
+
+DragType = Union[Literal[1, 2], int]
+
+class Magnifier(QWidget):
+    """A Magnifier is added to a View with view.setMagnifier().
+
+    It is shown when a mouse button is pressed together with a modifier
+    (by default Ctrl). It can then be resized by moving the mouse is with
+    two buttons pressed, or by wheeling with resizemodifier pressed.
+
+    Its size can be changed with resize() and the scale (defaulting to 3.0)
+    with setScale().
+
+    If can also be shown programmatically with the show() method. In this case
+    it can be dragged with the left mouse button.
+
+    Wheel zooming with the modifier (by default Ctrl) zooms the magnifier.
+
+    Instance attributes:
+
+    ``showmodifier``:
+        the modifier to popup (Qt.KeyboardModifier.ControlModifier)
+
+    ``zoommodifier``:
+        the modifier to wheel zoom (Qt.KeyboardModifier.ControlModifier)
+
+    ``resizemodifier``:
+        the key to press for wheel resizing (Qt.KeyboardModifier.ShiftModifier)
+
+    ``showbutton``:
+        the mouse button causing the magnifier to popup (by default
+        Qt.MouseButton.LeftButton)
+
+    ``resizebutton``:
+        the extra mouse button to be pressed when resizing the
+        magnifier (by default Qt.MouseButton.RightButton)
+
+    ``MAX_EXTRA_ZOOM``:
+        the maximum zoom (relative to the View's maximum zoom
+        level)
+
+    """
+    parent: Callable[[], QWidget]
+    _dragpos: QPoint
+
+    # modifier for show
+    showmodifier: Qt.KeyboardModifier = Qt.KeyboardModifier.ControlModifier
+
+    # modifier for wheel zoom
+    zoommodifier: Qt.KeyboardModifier = Qt.KeyboardModifier.ControlModifier
+
+    # extra modifier for wheel resize
+    resizemodifier: Qt.KeyboardModifier = Qt.KeyboardModifier.ShiftModifier
+
+    # button for show
+    showbutton: Qt.MouseButton = Qt.MouseButton.LeftButton
+
+    # extra button for resizing
+    resizebutton: Qt.MouseButton = Qt.MouseButton.RightButton
+
+    # Maximum extra zoom above the View.MAX_ZOOM
+    MAX_EXTRA_ZOOM: float = 1.25
+
+    # Minimal size
+    MIN_SIZE: int = 50
+
+    # Maximal size
+    MAX_SIZE: int = 640
+
+    def __init__(self):
+        super().__init__()
+        self._dragging: Union[DragType, Literal[False]] = False
+        self._resizepos: Optional[QPoint] = None
+        self._resizewidth: int = 0
+        self._scale: float = 3.0
+
+        self.setAutoFillBackground(True)
+        self.setBackgroundRole(QPalette.ColorRole.Dark)
+        self.resize(350, 350)
+        self.hide()
+
+    def moveCenter(self, pos: QPoint) -> None:
+        """Called by the View, centers the widget on the given QPoint."""
+        r = self.geometry()
+        r.moveCenter(pos)
+        self.setGeometry(r)
+
+    def setScale(self, scale: float) -> None:
+        """Sets the scale, relative to the displayed size in the View."""
+        self._scale = scale
+        self.update()
+
+    def scale(self) -> float:
+        """Returns the scale, defaulting to 3.0 (=300%)."""
+        return self._scale
+
+    def startShortDrag(self, pos: QPoint) -> None:
+        """Start a short drag (e.g. on ctrl+click)."""
+        viewport = self.parent()
+        self._dragging = DRAG_SHORT
+        self.moveCenter(pos)
+        self.raise_()
+        self.show()
+        viewport.setCursor(Qt.CursorShape.BlankCursor)
+
+    def endShortDrag(self) -> None:
+        """End a short drag."""
+        viewport = self.parent()
+        view: View = viewport.parent()  # type: ignore - view will always be present - SP
+        viewport.unsetCursor()
+        self.hide()
+        self._resizepos = None
+        self._dragging = False
+        view.stopScrolling()  # just if needed
+
+    def startLongDrag(self, pos):
+        """Start a long drag (when we are already visible and then dragged)."""
+        self._dragging = DRAG_LONG
+        self._dragpos = pos
+        self.setCursor(Qt.CursorShape.ClosedHandCursor)
+
+    def endLongDrag(self):
+        """End a long drag."""
+        self._dragging = False
+        self.unsetCursor()
+        view: View = self.parent().parent()  # type: ignore - this will always be present - SP
+        view.stopScrolling()  # just if needed
+
+    def resizeEvent(self, ev: QResizeEvent) -> None:
+        """Called on resize, sets our circular mask."""
+        self.setMask(QRegion(self.rect(), QRegion.RegionType.Ellipse))
+
+    def moveEvent(self, ev: QMoveEvent) -> None:
+        """Called on move, updates the contents."""
+        # we also update on paint events, but they are not generated if the
+        # magnifiers fully covers the viewport
+        self.update()
+
+    def eventFilter(self, viewport: QWidget, ev: QMouseEvent) -> bool:
+        """Handle events on the viewport of the View."""
+        view: View = viewport.parent()  # type: ignore - this will always be present - SP
+        if not self.isVisible():
+            if (
+                ev.type() == QEvent.Type.MouseButtonPress and
+                ev.modifiers() == self.showmodifier and
+                ev.button() == self.showbutton
+            ):
+                # show and drag while button pressed: DRAG_SHORT
+                self.startShortDrag(ev.position().toPoint())
+                return True
+        elif ev.type() == QEvent.Type.Paint:
+            # if the viewport is painted, also update
+            self.update()
+        elif self._dragging == DRAG_SHORT:
+            if ev.type() == QEvent.Type.MouseButtonPress:
+                if ev.button() == self.resizebutton:
+                    return True
+            elif ev.type() == QEvent.Type.MouseMove:
+                if ev.buttons() == self.showbutton | self.resizebutton:
+                    # DRAG_SHORT is busy, both buttons are pressed: resize!
+                    if self._resizepos is None:
+                        self._resizepos = ev.position().toPoint()
+                        self._resizewidth = self.width()
+                        dy = 0
+                    else:
+                        dy = (ev.position().toPoint() - self._resizepos).y()
+                    g = self.geometry()
+                    w = min(max(self.MIN_SIZE, self._resizewidth + 2 * dy), self.MAX_SIZE)
+                    self.resize(w, w)
+                    self.moveCenter(g.center())
+                else:
+                    # just drag our center
+                    self.moveCenter(ev.position().toPoint())
+                    view.scrollForDragging(ev.position().toPoint())
+                return True
+            elif ev.type() == QEvent.Type.MouseButtonRelease:
+                if ev.button() == self.showbutton:
+                    # left button is released, stop dragging and/or resizing, hide
+                    self.endShortDrag()
+                elif ev.button() == self.resizebutton:
+                    # right button is released, stop resizing, warp cursor to center
+                    self._resizepos = None
+                    QCursor.setPos(viewport.mapToGlobal(self.geometry().center()))
+                    ev.accept()
+                return True
+            elif ev.type() == QEvent.Type.ContextMenu:
+                self.endShortDrag()
+        return False
+
+    def mousePressEvent(self, ev: QMouseEvent) -> None:
+        """Start dragging the magnifier."""
+        if self._dragging == DRAG_SHORT:
+            ev.ignore()
+        elif not self._dragging and ev.button() == Qt.MouseButton.LeftButton:
+            self.startLongDrag(ev.position().toPoint())
+
+    def mouseMoveEvent(self, ev: QMouseEvent) -> None:
+        """Move the magnifier if we were dragging it."""
+        ev.ignore()
+        if self._dragging == DRAG_LONG:
+            ev.accept()
+            pos = self.mapToParent(ev.position().toPoint())
+            self.move(pos - self._dragpos)
+            view: View = self.parent().parent()  # type: ignore - this will always be present - SP
+            view.scrollForDragging(pos)
+
+    def mouseReleaseEvent(self, ev: QMouseEvent) -> None:
+        """The button is released, stop moving ourselves."""
+        ev.ignore()
+        if self._dragging == DRAG_LONG and ev.button() == Qt.MouseButton.LeftButton:
+            self.endLongDrag()
+
+    def wheelEvent(self, ev: QWheelEvent) -> None:
+        """Implement zooming the magnifying glass."""
+        if ev.modifiers() & self.zoommodifier:
+            ev.accept()
+            if ev.modifiers() & self.resizemodifier:
+                factor = 1.1 ** (ev.angleDelta().y() / 120)
+                g = self.geometry()
+                c = g.center()
+                g.setWidth(int(min(max(g.width() * factor, self.MIN_SIZE), self.MAX_SIZE)))
+                g.setHeight(int(min(max(g.height() * factor, self.MIN_SIZE), self.MAX_SIZE)))
+                g.moveCenter(c)
+                self.setGeometry(g)
+            else:
+                factor = 1.1 ** (ev.angleDelta().y() / 120)
+                scale = self._scale * factor
+                view: View = self.parent().parent()  # type: ignore - this will always be present - SP
+                layout = view.pageLayout()
+                scale = max(
+                    min(scale, view.MAX_ZOOM * self.MAX_EXTRA_ZOOM / layout.zoomFactor),
+                    view.MIN_ZOOM / layout.zoomFactor
+                )
+                self.setScale(scale)
+        else:
+            super().wheelEvent(ev)
+
+    def paintEvent(self, ev: QPaintEvent):
+        """Called when paint is needed, finds out which page to magnify."""
+        view: View = self.parent().parent()  # type: ignore - this will always be present - SP
+        layout = view.pageLayout()
+
+        scale = max(
+            min(self._scale, view.MAX_ZOOM * self.MAX_EXTRA_ZOOM / layout.zoomFactor),
+            view.MIN_ZOOM / layout.zoomFactor
+        )
+        matrix = QTransform().scale(scale, scale)
+
+        # the position of our center on the layout
+        c = self.geometry().center() - view.layoutPosition()
+
+        # make a region scaling back to the view scale
+        rect = matrix.inverted()[0].mapRect(self.rect())
+        rect.moveCenter(c)
+        region = QRegion(rect, QRegion.RegionType.Ellipse)  # touches the Pages we need to draw
+
+        # our rect on the enlarged pages
+        our_rect = self.rect()
+        our_rect.moveCenter(matrix.map(c))
+
+        # the virtual position of the whole scaled-up layout
+        ev_rect = ev.rect().translated(our_rect.topLeft())
+
+        # draw shadow border?
+        shadow = False
+        if hasattr(view, "drawDropShadow") and view.dropShadowEnabled:
+            shadow = True
+            shadow_width = layout.spacing * scale // 2
+
+        painter = QPainter(self)
+        for p in layout.pagesAt(region.boundingRect()):
+            # get a (reused) the copy of the page
+            page = p.copy(self, matrix)
+            # now paint it
+            rect = (page.geometry() & ev_rect).translated(-page.pos())
+            painter.save()
+            painter.translate(page.pos() - our_rect.topLeft())
+            if shadow:
+                # noinspection PyUnboundLocalVariable
+                view.drawDropShadow(page, painter, shadow_width)  # if shadow is true, shadow_width will be set - SP
+            page.paint(painter, rect, self.repaintPage)
+            painter.restore()
+
+        self.drawBorder(painter)
+
+    def drawBorder(self, painter: QPainter) -> None:
+        """Draw a nice looking glass border."""
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setPen(QPen(QColor(192, 192, 192, 128), 6))
+        painter.drawEllipse(self.rect().adjusted(2, 2, -2, -2))
+
+    def repaintPage(self, page: AbstractPage) -> None:
+        """Called when a Page was rendered in the background."""
+        ## TODO: smarter determination which part to update
+        self.update()
