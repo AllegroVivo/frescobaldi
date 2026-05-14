@@ -26,8 +26,8 @@ newline. Arguments are separated with spaces.
 """
 
 
-from PyQt6.QtCore import QUrl
-from PyQt6.QtNetwork import QLocalSocket
+from PySide6.QtCore import QUrl
+from PySide6.QtNetwork import QLocalSocket
 
 import app
 

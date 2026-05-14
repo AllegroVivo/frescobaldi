@@ -22,10 +22,11 @@ Helper application preferences.
 """
 
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QFileDialog, QGridLayout, QLabel, QVBoxLayout,
-    QWidget)
+    QWidget
+)
 
 import app
 import util

@@ -24,7 +24,7 @@ Code to load and manage PDF documents to view.
 
 import os
 
-from PyQt6.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 import app
 import plugin

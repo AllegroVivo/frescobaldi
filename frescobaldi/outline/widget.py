@@ -22,9 +22,9 @@ The document outline tool widget.
 """
 
 
-from PyQt6.QtCore import QEvent, QTimer
-from PyQt6.QtGui import QBrush, QFont, QTextCursor
-from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PySide6.QtCore import QEvent, QTimer
+from PySide6.QtGui import QBrush, QFont, QTextCursor
+from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 import app
 import qutil

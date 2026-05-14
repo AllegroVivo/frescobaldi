@@ -21,13 +21,12 @@
 The Preferences Dialog.
 """
 
-
-
-from PyQt6.QtCore import QMargins, QSettings, QSize, Qt, pyqtSignal
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QMargins, QSettings, QSize, Qt, Signal as QSignal
+from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QGroupBox, QHBoxLayout, QListWidget,
-    QListWidgetItem, QScrollArea, QStackedWidget, QVBoxLayout, QWidget)
+    QListWidgetItem, QScrollArea, QStackedWidget, QVBoxLayout, QWidget
+)
 
 import app
 import qutil
@@ -327,7 +326,7 @@ class Extensions(PrefsItemBase):
 
 class Page(QWidget):
     """Base class for settings pages."""
-    changed = pyqtSignal()
+    changed = QSignal()
     hasChanges = False
 
     def markChanged(self):
@@ -394,7 +393,7 @@ class ScrolledGroupsPage(GroupsPage, ScrolledPage):
 
 class Group(QGroupBox):
     """This is a QGroupBox that auto-adds itself to a Page."""
-    changed = pyqtSignal()
+    changed = QSignal()
 
     def __init__(self, page):
         super().__init__()

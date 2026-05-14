@@ -26,9 +26,9 @@ import os
 import importlib
 import shutil
 
-from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QAction, QTextCursor
-from PyQt6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QAction, QTextCursor
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 import app
 import icons

@@ -22,8 +22,8 @@ A tool to display an engraver's copy (manuscript) in a dock.
 """
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QKeySequence
 
 import app
 import pagedview

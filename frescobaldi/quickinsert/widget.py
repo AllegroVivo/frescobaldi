@@ -24,9 +24,11 @@ The Quick Insert panel widget.
 
 import weakref
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QToolBox,
-                             QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import (
+    QComboBox, QHBoxLayout, QLabel, QToolBox, QToolButton,
+    QVBoxLayout, QWidget
+)
 
 import app
 import userguide.util

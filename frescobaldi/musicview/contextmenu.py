@@ -22,8 +22,8 @@ The PDF preview panel context menu.
 """
 
 
-from PyQt6.QtCore import QUrl
-from PyQt6.QtWidgets import QApplication, QMenu
+from PySide6.QtCore import QUrl
+from PySide6.QtWidgets import QApplication, QMenu
 
 
 import app

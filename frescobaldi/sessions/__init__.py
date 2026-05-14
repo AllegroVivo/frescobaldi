@@ -28,7 +28,7 @@ A session is a global list of open documents, with some additional preferences s
 
 import itertools
 
-from PyQt6.QtCore import QSettings, QUrl
+from PySide6.QtCore import QSettings, QUrl
 
 import app
 import util

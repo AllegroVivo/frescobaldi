@@ -21,14 +21,12 @@
 A Manual manages a searchable index for a LilyPond manual.
 """
 
-
-
-from PyQt6.QtCore import QObject, QUrl, pyqtSignal
+from PySide6.QtCore import QObject, QUrl, Signal as QSignal
 
 
 class Manual(QObject):
 
-    loaded = pyqtSignal(bool)
+    loaded = QSignal(bool)
 
     def __init__(self, lilydoc):
         self._loaded = None

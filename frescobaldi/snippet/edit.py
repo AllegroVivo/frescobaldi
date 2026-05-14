@@ -21,15 +21,14 @@
 The dialog for editing a snippet
 """
 
-
-
 import re
 
-from PyQt6.QtCore import QItemSelectionModel, QSize
-from PyQt6.QtGui import QAction, QIcon, QKeySequence, QTextCharFormat
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QItemSelectionModel, QSize
+from PySide6.QtGui import QAction, QIcon, QKeySequence, QTextCharFormat
+from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QGridLayout, QLabel, QLineEdit,
-    QMessageBox, QPushButton, QTextEdit, QVBoxLayout)
+    QMessageBox, QPushButton, QTextEdit, QVBoxLayout
+)
 
 import actioncollectionmanager
 import app

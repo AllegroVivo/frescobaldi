@@ -25,10 +25,11 @@ A QGroupBox in the Quick Insert Panel that auto-layouts its buttons.
 
 import weakref
 
-from PyQt6.QtCore import QEvent, QSize
-from PyQt6.QtGui import QAction, QKeySequence, QTextCursor
-from PyQt6.QtWidgets import (
-    QGridLayout, QGroupBox, QMenu, QToolButton, QToolTip)
+from PySide6.QtCore import QEvent, QSize
+from PySide6.QtGui import QAction, QKeySequence, QTextCursor
+from PySide6.QtWidgets import (
+    QGridLayout, QGroupBox, QMenu, QToolButton, QToolTip
+)
 
 import actioncollection
 import actioncollectionmanager

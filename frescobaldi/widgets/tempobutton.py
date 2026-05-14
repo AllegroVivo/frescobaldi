@@ -24,8 +24,8 @@ A button that emits a tempo(int) signal when the user clicks multiple times.
 
 import time
 
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QToolButton
+from PySide6.QtCore import Signal as QSignal
+from PySide6.QtWidgets import QToolButton
 
 import app
 import icons
@@ -37,7 +37,7 @@ class TempoButton(QToolButton):
     emits tempo(bpm) when the user clicks the button multiple times.
 
     """
-    tempo = pyqtSignal(int)
+    tempo = QSignal(int)
 
     def __init__(self, icon=None, parent=None):
         super().__init__(parent)

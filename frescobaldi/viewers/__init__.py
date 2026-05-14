@@ -35,11 +35,12 @@ import os
 import platform
 import weakref
 
-from PyQt6.QtCore import QSettings, QTimer, Qt, pyqtSignal
-from PyQt6.QtGui import QAction, QActionGroup, QColor, QKeySequence, QPalette
-from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QFileDialog, QLabel,
-    QMessageBox, QSpinBox, QToolBar, QWidgetAction)
+from PySide6.QtCore import QSettings, QTimer, Qt, Signal as QSignal
+from PySide6.QtGui import QAction, QActionGroup, QColor, QKeySequence, QPalette
+from PySide6.QtWidgets import (
+    QApplication, QComboBox, QFileDialog, QLabel, QMessageBox, 
+    QSpinBox, QToolBar, QWidgetAction
+)
 
 import app
 import actioncollection
@@ -386,10 +387,10 @@ class ViewdocChooserAction(ComboBoxAction):
     and it generated new PDF documents.
     """
 
-    viewdocClosed = pyqtSignal()
-    viewdocsChanged = pyqtSignal()
-    currentViewdocChanged = pyqtSignal(qpageview.document.Document)
-    viewdocsMissing = pyqtSignal(list)
+    viewdocClosed = QSignal()
+    viewdocsChanged = QSignal()
+    currentViewdocChanged = QSignal(qpageview.document.Document)
+    viewdocsMissing = QSignal(list)
 
     def __init__(self, panel):
         super().__init__(panel)

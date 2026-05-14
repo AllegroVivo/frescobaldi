@@ -22,12 +22,8 @@
 Show a dialog with available text and music fonts.
 """
 
-from PyQt6.QtCore import (
-    QByteArray,
-    QSettings,
-    Qt
-)
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QByteArray, QSettings, Qt
+from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
@@ -42,12 +38,7 @@ import fonts
 import userguide
 import widgets.dialog
 
-from . import (
-    fontcommand,
-    musicfonts,
-    preview,
-    textfonts
-)
+from . import fontcommand, musicfonts, preview, textfonts
 
 
 _default_fonts = {
@@ -223,7 +214,7 @@ class FontsDialog(QDialog):
 
     def copy_result(self):
         """Copies the font command (as shown) to the clipboard."""
-        from PyQt6.QtGui import QGuiApplication
+        from PySide6.QtGui import QGuiApplication
         cmd = self.font_cmd()
         if cmd[-1] != '\n':
             cmd = cmd + '\n'

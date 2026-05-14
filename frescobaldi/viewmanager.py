@@ -28,7 +28,7 @@ multiple views.
 import contextlib
 import weakref
 
-from PySide6.QtCore import QEvent, Qt, pyqtSignal
+from PySide6.QtCore import QEvent, Qt, Signal as QSignal
 from PySide6.QtGui import QAction, QKeySequence, QPixmap
 from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QMenu, QProgressBar, QSplitter,
@@ -103,7 +103,7 @@ class ViewSpace(QWidget):
     things on a per ViewSpace basis, e.g. in the statusbar of a ViewSpace.
 
     """
-    viewChanged = pyqtSignal(view_.View)
+    viewChanged = QSignal(view_.View)
 
     def __init__(self, manager, parent=None):
         super().__init__(parent)
@@ -221,10 +221,10 @@ class ViewManager(QSplitter):
     # even if the view is the same as before.
     # use MainWindow.currentViewChanged() to be informed about
     # real View changes.
-    viewChanged = pyqtSignal(view_.View)
+    viewChanged = QSignal(view_.View)
 
     # This signal is emitted when another ViewSpace becomes active.
-    activeViewSpaceChanged = pyqtSignal(ViewSpace, ViewSpace)
+    activeViewSpaceChanged = QSignal(ViewSpace, ViewSpace)
 
     def __init__(self, parent=None):
         super().__init__(parent)

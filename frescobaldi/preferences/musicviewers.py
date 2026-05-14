@@ -25,12 +25,13 @@ Music View preferences.
 import platform
 import re
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
     QAbstractItemView, QButtonGroup, QCheckBox, QComboBox, QDoubleSpinBox,
     QFontComboBox, QGridLayout, QHBoxLayout, QLabel, QPushButton, QRadioButton,
-    QSlider, QSpinBox, QVBoxLayout, QWidget)
+    QSlider, QSpinBox, QVBoxLayout, QWidget
+)
 
 import app
 import qutil

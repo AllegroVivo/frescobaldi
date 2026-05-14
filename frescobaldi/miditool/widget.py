@@ -22,9 +22,11 @@ The MIDI tool widget.
 """
 
 
-from PyQt6.QtCore import Qt, QTimer, QSettings
-from PyQt6.QtWidgets import (
-    QWidget, QComboBox, QToolButton, QSlider, QGridLayout, QSizePolicy, QLabel)
+from PySide6.QtCore import Qt, QTimer, QSettings
+from PySide6.QtWidgets import (
+    QWidget, QComboBox, QToolButton, QSlider, QGridLayout,
+    QSizePolicy, QLabel
+)
 
 import app
 import css

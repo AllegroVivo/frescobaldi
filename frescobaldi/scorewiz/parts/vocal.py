@@ -26,10 +26,12 @@ import collections
 import itertools
 import re
 
-from PyQt6.QtCore import QRegularExpression, Qt
-from PyQt6.QtGui import QRegularExpressionValidator
-from PyQt6.QtWidgets import (
-    QCheckBox, QComboBox, QGroupBox, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout)
+from PySide6.QtCore import QRegularExpression, Qt
+from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGroupBox, QHBoxLayout, QLabel, QSpinBox,
+    QVBoxLayout
+)
 
 import listmodel
 import ly.dom

@@ -23,11 +23,7 @@ Provides a consistent but configurable infrastructure for toolbars.
 """
 
 
-from PyQt6.QtWidgets import (
-    QWidget,
-    QToolBar,
-    QHBoxLayout,
-)
+from PySide6.QtWidgets import QWidget, QToolBar, QHBoxLayout
 
 class ToolBar(QToolBar):
     """Improved toolbar for use when not child of a QMainWindow.

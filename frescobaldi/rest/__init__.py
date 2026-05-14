@@ -22,7 +22,7 @@ Tools to edit rests of selected music.
 """
 
 
-from PyQt6.QtGui import QAction
+from PySide6.QtGui import QAction
 
 import actioncollection
 import actioncollectionmanager

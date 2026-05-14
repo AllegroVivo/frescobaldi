@@ -42,9 +42,9 @@ import operator
 import re
 import time
 
-from PyQt6.QtCore import QEvent, QObject, Qt
-from PyQt6.QtGui import QKeySequence, QTextCursor
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QEvent, QObject, Qt
+from PySide6.QtGui import QKeySequence, QTextCursor
+from PySide6.QtWidgets import QApplication
 
 
 _move_operations = (

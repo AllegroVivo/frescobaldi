@@ -299,7 +299,7 @@ class View(QPlainTextEdit):
     def mouseMoveEvent(self, ev):
         """Track the mouse move to show the tooltip"""
         super().mouseMoveEvent(ev)
-        cursor_at_mouse = self.cursorForPosition(ev.pos())
+        cursor_at_mouse = self.cursorForPosition(ev.position().toPoint())
         cur_block = cursor_at_mouse.block()
         # Only check tooltip when changing line/block or after invalidating
         if self.include_target or not cur_block == self.block_at_mouse:

@@ -22,7 +22,6 @@ The Frescobaldi User Manual.
 """
 
 
-
 def show(name=None):
     """Display the help browser and the specified help page.
 
@@ -44,8 +43,8 @@ def addButton(box, name):
     the specified help page is opened.
 
     """
-    from PyQt6.QtGui import QKeySequence
-    from PyQt6.QtWidgets import QDialogButtonBox
+    from PySide6.QtGui import QKeySequence
+    from PySide6.QtWidgets import QDialogButtonBox
     box.addButton(QDialogButtonBox.StandardButton.Help).setShortcut(QKeySequence.StandardKey.HelpContents)
     box.helpRequested.connect(lambda: show(name))
 

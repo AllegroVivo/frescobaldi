@@ -25,7 +25,7 @@ from enum import Enum
 import collections
 import time
 
-from PyQt6.QtCore import QObject
+from PySide6.QtCore import QObject
 
 import app
 import signals

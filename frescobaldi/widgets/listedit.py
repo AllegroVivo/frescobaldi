@@ -22,10 +22,11 @@ Widgets to edit a list of items in a flexible way.
 """
 
 
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Signal as QSignal
+from PySide6.QtWidgets import (
     QFileDialog, QGridLayout, QListWidget, QListWidgetItem, QPushButton,
-    QWidget)
+    QWidget
+)
 
 import app
 import icons
@@ -35,7 +36,7 @@ class ListEdit(QWidget):
     """A widget to edit a list of items (e.g. a list of directories)."""
 
     # emitted when anything changed in the listbox.
-    changed = pyqtSignal()
+    changed = QSignal()
 
     def __init__(self, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)

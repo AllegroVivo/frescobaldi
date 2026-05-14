@@ -24,8 +24,8 @@ All completions data.
 
 import itertools
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QFontDatabase
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QFontDatabase
 
 import listmodel
 import ly.words

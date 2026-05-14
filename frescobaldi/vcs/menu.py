@@ -23,9 +23,9 @@ Currently only list local branches, allowing one to switch to that branch.
 """
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QActionGroup
-from PyQt6.QtWidgets import QMenu, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QActionGroup
+from PySide6.QtWidgets import QMenu, QMessageBox
 
 import app
 import plugin

@@ -22,10 +22,11 @@ Container part types.
 """
 
 
-from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QGroupBox,
-                             QHBoxLayout, QLabel, QLineEdit, QRadioButton,
-                             QVBoxLayout)
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGridLayout, QGroupBox, QHBoxLayout,
+    QLabel, QLineEdit, QRadioButton, QVBoxLayout
+)
 
 import ly.dom
 import listmodel

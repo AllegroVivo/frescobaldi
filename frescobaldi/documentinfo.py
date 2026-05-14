@@ -415,4 +415,4 @@ class _Worker(QObject):
         doc = lydocument.Document(document)
         return music.Document(doc)
 
-    finished = Signal("PySide_PyObject")  # WorkerData
+    finished = Signal(_WorkerData)  # WorkerData

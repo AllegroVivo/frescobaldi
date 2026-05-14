@@ -27,10 +27,11 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
-from PyQt6.QtGui import (
+from PySide6.QtGui import (
     QTextFormat, QColor, QTextCharFormat, QFont, QFontDatabase,
-    QKeySequence)
-from PyQt6.QtWidgets import QMessageBox
+    QKeySequence
+)
+from PySide6.QtWidgets import QMessageBox
 
 import os
 import platform

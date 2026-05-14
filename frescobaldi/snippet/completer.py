@@ -21,12 +21,10 @@
 The completer for the snippet editing dialog.
 """
 
-
-
 import keyword
 import re
 
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 
 import app
 import listmodel

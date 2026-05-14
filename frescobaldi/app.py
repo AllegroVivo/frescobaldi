@@ -121,9 +121,11 @@ def instantiate():
     """Instantiate the global QApplication object."""
     global qApp
     args = list(map(os.fsencode, [os.path.abspath(sys.argv[0])] + sys.argv[1:]))
+    args = [arg.decode() for arg in args]
     if platform.system() == "Windows":
         args.append("-platform")
         args.append("windows:fontengine=freetype")
+    print(args)
     qApp = QApplication(args)
     QApplication.setApplicationName(appinfo.name)
     QApplication.setApplicationVersion(appinfo.version)

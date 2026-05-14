@@ -21,10 +21,8 @@
 Restored changed or deleted builtin snippets.
 """
 
-
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 import app
 import userguide

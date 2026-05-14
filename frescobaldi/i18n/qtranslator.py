@@ -25,9 +25,7 @@ project root directory.
 
 """
 
-
-
-from PyQt6.QtCore import QCoreApplication, QTranslator
+from PySide6.QtCore import QCoreApplication, QTranslator
 
 import app
 

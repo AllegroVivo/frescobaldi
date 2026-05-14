@@ -24,8 +24,8 @@ All available part types.
 
 import collections
 
-from PyQt6.QtCore import QAbstractItemModel, QModelIndex, Qt
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
+from PySide6.QtWidgets import QApplication
 
 import icons
 

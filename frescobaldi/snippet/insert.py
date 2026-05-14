@@ -22,9 +22,9 @@ Insert snippets into a Document.
 """
 
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QTextCursor
-from PyQt6.QtWidgets import QMessageBox
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import QTextCursor
+from PySide6.QtWidgets import QMessageBox
 
 import cursortools
 import tokeniter

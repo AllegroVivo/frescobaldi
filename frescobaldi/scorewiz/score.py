@@ -22,10 +22,11 @@ The Parts widget.
 """
 
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
     QGroupBox, QHBoxLayout, QLabel, QPushButton, QSplitter, QStackedWidget,
-    QToolButton, QTreeView, QVBoxLayout, QWidget)
+    QToolButton, QTreeView, QVBoxLayout, QWidget
+)
 
 import app
 import icons

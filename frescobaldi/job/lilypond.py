@@ -28,7 +28,7 @@ import os
 import shutil
 import sys
 
-from PyQt6.QtCore import QSettings, QUrl
+from PySide6.QtCore import QSettings, QUrl
 
 import ly.document
 import ly.docinfo

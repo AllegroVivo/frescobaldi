@@ -25,10 +25,11 @@ Generic import dialog. Presuppose a child instance for the specific import.
 import os
 import platform
 
-from PyQt6.QtCore import Qt
-
-from PyQt6.QtWidgets import (QCheckBox, QDialog, QDialogButtonBox,
-    QGridLayout, QLabel, QTabWidget, QTextEdit, QWidget)
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QCheckBox, QDialog, QDialogButtonBox, QGridLayout, QLabel,
+    QTabWidget, QTextEdit, QWidget
+)
 
 import app
 import lilychooser

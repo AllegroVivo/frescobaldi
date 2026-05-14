@@ -23,8 +23,8 @@ UrlRequester, a lineedit with a Browse-button.
 
 import os
 
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Signal as QSignal
+from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QLineEdit,
@@ -43,8 +43,8 @@ class UrlRequester(QWidget):
     respective objects.
 
     """
-    changed = pyqtSignal()
-    editingFinished = pyqtSignal()
+    changed = QSignal()
+    editingFinished = QSignal()
 
     def __init__(
         self,

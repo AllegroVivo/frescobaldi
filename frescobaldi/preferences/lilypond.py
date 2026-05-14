@@ -31,14 +31,15 @@ import shutil
 import sys
 import tempfile
 
-from PyQt6.QtCore import pyqtSignal, QSettings, Qt, QTimer, QUrl
-from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Signal as QSignal, QSettings, Qt, QTimer, QUrl
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (
     QAbstractItemView, QCheckBox, QDialog, QDialogButtonBox,
     QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem,
     QMenu, QMessageBox, QPushButton, QRadioButton, QTabWidget, QVBoxLayout,
-    QWidget)
+    QWidget
+)
 
 import app
 import userguide

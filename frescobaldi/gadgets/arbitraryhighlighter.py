@@ -25,9 +25,9 @@ using QTextEdit.ExtraSelections.
 import weakref
 import operator
 
-from PyQt6.QtCore import QObject, QTimer
-from PyQt6.QtGui import QTextCharFormat, QTextFormat
-from PyQt6.QtWidgets import QTextEdit
+from PySide6.QtCore import QObject, QTimer
+from PySide6.QtGui import QTextCharFormat, QTextFormat
+from PySide6.QtWidgets import QTextEdit
 
 
 class ArbitraryHighlighter(QObject):

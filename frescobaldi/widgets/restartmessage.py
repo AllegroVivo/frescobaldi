@@ -25,7 +25,7 @@ either for simply taking effect or to avoid possible instabilities.
 These include switching the Git branch or removing extensions.
 """
 
-from PyQt6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 import app
 

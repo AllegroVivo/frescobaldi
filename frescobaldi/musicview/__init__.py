@@ -36,10 +36,11 @@ import platform
 import sys
 import weakref
 
-from PyQt6.QtCore import QSettings, QTimer, Qt, pyqtSignal
-from PyQt6.QtGui import QAction, QActionGroup, QColor, QKeySequence, QPalette
-from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QLabel, QSpinBox, QWidgetAction)
+from PySide6.QtCore import QSettings, QTimer, Qt, Signal as QSignal
+from PySide6.QtGui import QAction, QActionGroup, QColor, QKeySequence, QPalette
+from PySide6.QtWidgets import (
+    QApplication, QComboBox, QLabel, QSpinBox, QWidgetAction
+)
 
 import app
 import actioncollection
@@ -284,9 +285,9 @@ class DocumentChooserAction(ComboBoxAction):
 
     """
 
-    documentClosed = pyqtSignal()
-    documentsChanged = pyqtSignal()
-    currentDocumentChanged = pyqtSignal(qpageview.document.Document)
+    documentClosed = QSignal()
+    documentsChanged = QSignal()
+    currentDocumentChanged = QSignal(qpageview.document.Document)
 
     def __init__(self, panel):
         super().__init__(panel)

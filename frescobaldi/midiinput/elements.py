@@ -2,8 +2,8 @@
 Elements that can be inserted by MIDI events
 """
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 
 import ly.pitch
 

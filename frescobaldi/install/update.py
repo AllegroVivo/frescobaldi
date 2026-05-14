@@ -22,7 +22,7 @@ Performs upgrades in the settings structure.
 """
 
 
-from PyQt6.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 import appinfo
 

@@ -24,9 +24,9 @@ The sidebar in the editor View.
 
 import sys
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QApplication
 
 import app
 import actioncollection

@@ -22,13 +22,16 @@ Fonts and Colors preferences page.
 """
 
 
-from PyQt6.QtCore import pyqtSignal, QSettings, QSize, Qt
-from PyQt6.QtGui import (QBrush, QColor, QFont, QPalette, QTextCharFormat,
-                         QTextFormat)
-from PyQt6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox,
-                             QFontComboBox, QGridLayout, QGroupBox,
-                             QHBoxLayout, QLabel, QMessageBox, QStackedWidget,
-                             QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import Signal as QSignal, QSettings, QSize, Qt
+from PySide6.QtGui import (
+    QBrush, QColor, QFont, QPalette, QTextCharFormat, QTextFormat
+)
+from PySide6.QtWidgets import (
+    QApplication, QCheckBox, QDoubleSpinBox, QFontComboBox,
+    QGridLayout, QGroupBox, QHBoxLayout, QLabel, QMessageBox,
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
+)
 
 import app
 import icons
@@ -303,7 +306,7 @@ class FontsColors(preferences.Page):
 
 class BaseColors(QGroupBox):
 
-    changed = pyqtSignal(str)
+    changed = QSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -335,7 +338,7 @@ class BaseColors(QGroupBox):
 
 class CustomAttributes(QGroupBox):
 
-    changed = pyqtSignal()
+    changed = QSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)

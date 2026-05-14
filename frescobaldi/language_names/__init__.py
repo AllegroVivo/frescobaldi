@@ -12,7 +12,6 @@ which are used currently in data.py.
 """
 
 
-
 import itertools
 import locale
 

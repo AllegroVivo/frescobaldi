@@ -22,7 +22,7 @@ Pages through a QToolBox using the mouse wheel, by default with the
 CTRL modifier.
 """
 
-from PyQt6.QtCore import QEvent, QObject, Qt
+from PySide6.QtCore import QEvent, QObject, Qt
 
 
 class ToolBoxWheeler(QObject):

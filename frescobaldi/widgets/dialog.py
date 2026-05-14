@@ -25,11 +25,12 @@ A basic Dialog class.
 import functools
 import operator
 
-from PyQt6.QtCore import QRegularExpression, QSize, Qt
-from PyQt6.QtGui import QIcon, QPixmap, QRegularExpressionValidator
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QRegularExpression, QSize, Qt
+from PySide6.QtGui import QIcon, QPixmap, QRegularExpressionValidator
+from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QGridLayout, QLabel, QLineEdit, QStyle,
-    QWidget)
+    QWidget
+)
 
 from . import Separator
 

@@ -22,7 +22,7 @@ Run LilyPond to get various types of output.
 """
 
 
-from PyQt6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt
 
 import app
 import job

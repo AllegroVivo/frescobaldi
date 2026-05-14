@@ -18,7 +18,7 @@
 # See http://www.gnu.org/licenses/ for more information.
 
 """
-MIDI stuff for Qt4.
+MIDI stuff for PySide6.
 """
 
 

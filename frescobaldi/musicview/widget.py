@@ -27,9 +27,9 @@ import collections
 import itertools
 import os
 
-from PyQt6.QtCore import pyqtSignal, QMargins, QPoint, QRect, QSettings, Qt, QUrl
-from PyQt6.QtGui import QCursor, QTextCharFormat
-from PyQt6.QtWidgets import QToolTip, QVBoxLayout, QWidget
+from PySide6.QtCore import Signal as QSignal, QMargins, QPoint, QRect, QSettings, Qt, QUrl
+from PySide6.QtGui import QCursor, QTextCharFormat
+from PySide6.QtWidgets import QToolTip, QVBoxLayout, QWidget
 
 import qpageview
 import qpageview.layout

@@ -24,10 +24,12 @@ Dialog for the Mode shift functionality.
 
 from fractions import Fraction
 
-from PyQt6.QtCore import QSettings, QSize
-from PyQt6.QtGui import QValidator
-from PyQt6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox,
-    QGridLayout, QLabel, QLineEdit, QWidget)
+from PySide6.QtCore import QSettings, QSize
+from PySide6.QtGui import QValidator
+from PySide6.QtWidgets import (
+    QComboBox, QDialog, QDialogButtonBox, QGridLayout, QLabel,
+    QLineEdit, QWidget
+)
 
 import app
 import userguide

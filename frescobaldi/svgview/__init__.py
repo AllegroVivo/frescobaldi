@@ -27,8 +27,8 @@ This previews a SVG-file with initial editing abilities.
 
 import importlib.util
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QKeySequence
 
 import app
 import actioncollection

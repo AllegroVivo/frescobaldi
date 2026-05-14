@@ -22,9 +22,9 @@ Completer providing completions in a Q(Plain)TextEdit.
 """
 
 
-from PyQt6.QtCore import QEvent, QModelIndex, Qt
-from PyQt6.QtGui import QKeySequence, QTextCursor
-from PyQt6.QtWidgets import QCompleter, QApplication
+from PySide6.QtCore import QEvent, QModelIndex, Qt
+from PySide6.QtGui import QKeySequence, QTextCursor
+from PySide6.QtWidgets import QCompleter, QApplication
 
 
 class Completer(QCompleter):

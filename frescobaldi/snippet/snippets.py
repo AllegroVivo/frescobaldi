@@ -22,7 +22,6 @@ Accessing the snippets data.
 """
 
 
-
 import collections
 import functools
 import itertools

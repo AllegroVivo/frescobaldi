@@ -22,7 +22,7 @@ The Score Wizard.
 """
 
 
-from PyQt6.QtGui import QAction, QKeySequence
+from PySide6.QtGui import QAction, QKeySequence
 
 import actioncollection
 import actioncollectionmanager

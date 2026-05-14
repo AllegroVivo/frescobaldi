@@ -22,10 +22,11 @@ The score settings widget.
 """
 
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QGroupBox,
-                             QHBoxLayout, QLabel, QVBoxLayout, QWidget,
-                             QButtonGroup, QRadioButton)
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGridLayout, QGroupBox, QHBoxLayout,
+    QLabel, QVBoxLayout, QWidget, QButtonGroup, QRadioButton
+)
 
 import app
 import i18n.setup

@@ -26,15 +26,16 @@ that runs inside the displayed SVG file.
 """
 
 
-
-
 import os
 import sys
 
-from PyQt6.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject, QSettings, QUrl
-from PyQt6.QtGui import QTextCharFormat, QTextCursor
-from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import (
+    Signal as QSignal, Slot as QSlot, QFile, QIODevice, QObject,
+    QSettings, QUrl
+)
+from PySide6.QtGui import QTextCharFormat, QTextCursor
+from PySide6.QtWebChannel import QWebChannel
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import app
 import util
@@ -56,14 +57,14 @@ def getJsScript(filename):
 
 
 class View(QWebEngineView):
-    zoomFactorChanged = pyqtSignal(float)
-    objectDragged = pyqtSignal(float, float)
-    objectDragging = pyqtSignal(float, float)
-    objectStartDragging = pyqtSignal(float, float)
+    zoomFactorChanged = QSignal(float)
+    objectDragged = QSignal(float, float)
+    objectDragging = QSignal(float, float)
+    objectStartDragging = QSignal(float, float)
 
-    cursor = pyqtSignal(QTextCursor)
-    selectedObject = pyqtSignal(str)
-    selectedUrl = pyqtSignal(QTextCursor)
+    cursor = QSignal(QTextCursor)
+    selectedObject = QSignal(str)
+    selectedUrl = QSignal(QTextCursor)
 
     defaulturl = QUrl.fromLocalFile(os.path.join(__path__[0], 'background.html'))
 
@@ -244,19 +245,19 @@ class JSLink(QObject):
         super().__init__()
         self.view = view
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def click(self, url):
         """set cursor in source by clicked textedit link"""
         if not self.view.doTextEdit(url, True):
             import helpers
             helpers.openUrl(QUrl(url))
 
-    @pyqtSlot(float, float)
+    @QSlot(float, float)
     def dragged(self, offX, offY):
         """announce extra-offsets an element has been dragged to"""
         self.view.doObjectDragged(offX, offY)
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def draggedObject(self, JSON_string):
         # leave the following commented code as an idea how to proceed from here
         #print("Dragged object JSON representation:")
@@ -265,36 +266,36 @@ class JSLink(QObject):
         #print(js.decode(JSON_string))
         pass
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def dragElement(self, url):
         self.view.dragElement(url)
 
-    @pyqtSlot(float, float)
+    @QSlot(float, float)
     def dragging(self, offX, offY):
         """announce extra-offsets while dragging an element"""
         self.view.doObjectDragging(offX, offY)
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def hover(self, url):
         """actions when user set mouse over link"""
         self.view.doTextEdit(url, False)
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def leave(self, url):
         """actions when user moves mouse off link"""
         self.view.unHighlight()
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def pyLog(self, txt):
         """Temporary function. Print to Python console."""
         print(txt)
 
-    @pyqtSlot(str)
+    @QSlot(str)
     def saveSVG(self, svg_string):
         """Pass string from JavaScript and save to current SVG page."""
         self.view.saveSVG(svg_string)
 
-    @pyqtSlot(float, float)
+    @QSlot(float, float)
     def startDragging(self, offX, offY):
         """announce extra-offsets when starting to drag an element"""
         self.view.doObjectStartDragging(offX, offY)

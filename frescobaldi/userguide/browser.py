@@ -24,10 +24,10 @@ The help browser window.
 
 import os
 
-from PyQt6.QtCore import QSettings, QSize, Qt, QUrl
-from PyQt6.QtGui import QTextDocument
-from PyQt6.QtWidgets import QMainWindow, QTextBrowser
-from PyQt6.QtPrintSupport import QAbstractPrintDialog, QPrintDialog, QPrinter
+from PySide6.QtCore import QSettings, QSize, Qt, QUrl
+from PySide6.QtGui import QTextDocument
+from PySide6.QtWidgets import QMainWindow, QTextBrowser
+from PySide6.QtPrintSupport import QAbstractPrintDialog, QPrintDialog, QPrinter
 
 import app
 import helpers

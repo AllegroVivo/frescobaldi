@@ -24,12 +24,14 @@ The browser widget for the help browser.
 
 import os
 
-from PyQt6.QtCore import QSettings, Qt, QUrl
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtPrintSupport import QPrintDialog, QPrinter
-from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import QComboBox, QLineEdit, QMenu, QToolBar, QVBoxLayout, QWidget
+from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtGui import QKeySequence
+from PySide6.QtPrintSupport import QPrintDialog, QPrinter
+from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import (
+    QComboBox, QLineEdit, QMenu, QToolBar, QVBoxLayout, QWidget
+)
 
 import app
 import icons

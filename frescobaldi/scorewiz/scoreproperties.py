@@ -30,10 +30,11 @@ Properties of a score:
 import fractions
 import re
 
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import (
-    QCheckBox, QComboBox, QGridLayout, QHBoxLayout, QLabel, QLineEdit)
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QIntValidator
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGridLayout, QHBoxLayout, QLabel, QLineEdit
+)
 
 import ly.dom
 import completionmodel

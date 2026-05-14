@@ -20,14 +20,14 @@
 import os
 import re
 
-from PyQt6.QtCore import (
+from PySide6.QtCore import (
     QObject,
     QRegularExpression,
     QSettings,
     QSortFilterProxyModel,
     Qt,
 )
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
     QLabel,
@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from PyQt6.QtGui import (
+from PySide6.QtGui import (
     QAction,
     QFont,
     QFontDatabase,

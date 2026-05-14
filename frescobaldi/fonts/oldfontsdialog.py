@@ -25,9 +25,9 @@ It keeps its settings.
 """
 
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QFontComboBox, QGridLayout, QLabel
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QFontComboBox, QGridLayout, QLabel
 
 import app
 import qutil

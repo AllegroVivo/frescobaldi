@@ -22,9 +22,9 @@ Event-filtering objects and helper functions to drag things.
 """
 
 
-from PyQt6.QtCore import QEvent, QFileInfo, QMimeData, QObject, Qt, QUrl
-from PyQt6.QtGui import QDrag
-from PyQt6.QtWidgets import QApplication, QFileIconProvider
+from PySide6.QtCore import QEvent, QFileInfo, QMimeData, QObject, Qt, QUrl
+from PySide6.QtGui import QDrag
+from PySide6.QtWidgets import QApplication, QFileIconProvider
 
 
 class ComboDrag(QObject):

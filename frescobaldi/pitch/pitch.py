@@ -27,8 +27,8 @@ All use the tools in ly.pitch.
 
 import re
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMessageBox
 
 import app
 import icons

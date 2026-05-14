@@ -25,9 +25,9 @@ Currently this makes only sense on macOS.
 """
 
 
-from PyQt6.QtCore import QEvent, QMimeData, QObject, QPoint, Qt
-from PyQt6.QtWidgets import QApplication, QStyle
-from PyQt6.QtGui import QDrag
+from PySide6.QtCore import QEvent, QMimeData, QObject, QPoint, Qt
+from PySide6.QtWidgets import QApplication, QStyle
+from PySide6.QtGui import QDrag
 
 import app
 

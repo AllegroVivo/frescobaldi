@@ -25,8 +25,8 @@ The model containing the snippets data.
 
 import bisect
 
-from PyQt6.QtCore import QAbstractItemModel, QModelIndex, Qt
-from PyQt6.QtGui import QKeySequence
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
+from PySide6.QtGui import QKeySequence
 
 import app
 import actioncollection
@@ -118,7 +118,7 @@ class SnippetModel(QAbstractItemModel):
             del self._names[row:end]
         finally:
             self.endRemoveRows()
-            return True
+        return True
 
     def saveSnippet(self, name, text, title):
         """Store a snippet.

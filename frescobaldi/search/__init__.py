@@ -26,11 +26,12 @@ import bisect
 import re
 import weakref
 
-from PyQt6.QtCore import QEvent, Qt
-from PyQt6.QtGui import QAction, QKeySequence, QPalette, QTextCursor
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QAction, QKeySequence, QPalette, QTextCursor
+from PySide6.QtWidgets import (
     QApplication, QCheckBox, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QStyle, QToolButton, QWidget)
+    QPushButton, QStyle, QToolButton, QWidget
+)
 
 import app
 import icons

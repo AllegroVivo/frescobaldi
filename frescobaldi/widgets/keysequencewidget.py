@@ -25,10 +25,13 @@ Loosely based on kkeysequencewidget.cpp from KDE :-)
 """
 
 
-from PyQt6.QtCore import QKeyCombination, QEvent, QSize, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtWidgets import (
-    QApplication, QHBoxLayout, QPushButton, QToolButton, QWidget)
+from PySide6.QtCore import (
+    QKeyCombination, QEvent, QSize, Qt, QTimer, Signal as QSignal
+)
+from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import (
+    QApplication, QHBoxLayout, QPushButton, QToolButton, QWidget
+)
 
 import app
 import icons
@@ -38,7 +41,7 @@ from . import ClearButton
 
 class KeySequenceWidget(QWidget):
 
-    keySequenceChanged = pyqtSignal(int)
+    keySequenceChanged = QSignal(int)
 
     def __init__(self, parent=None, num=0):
         super().__init__(parent)

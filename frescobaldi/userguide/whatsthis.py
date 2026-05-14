@@ -22,8 +22,7 @@ Link help:urls in WhatsThis text to the help browser.
 """
 
 
-
-from PyQt6.QtCore import QEvent, QObject, QUrl
+from PySide6.QtCore import QEvent, QObject, QUrl
 
 from . import show
 

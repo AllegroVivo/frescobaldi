@@ -22,7 +22,7 @@ Functions to access the built-in and user defined templates.
 """
 
 
-from PyQt6.QtGui import QAction
+from PySide6.QtGui import QAction
 
 from . import snippets
 

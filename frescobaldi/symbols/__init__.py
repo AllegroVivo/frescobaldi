@@ -25,10 +25,10 @@ The default black color will be adjusted to the default Text color.
 
 import os
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap
-from PyQt6.QtWidgets import QApplication, QStyleOption
-from PyQt6.QtSvg import QSvgRenderer
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap
+from PySide6.QtWidgets import QApplication, QStyleOption
+from PySide6.QtSvg import QSvgRenderer
 
 __all__ = ["icon"]
 

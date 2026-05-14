@@ -25,15 +25,15 @@ Manage access to LilyPond documentation.
 import os
 import re
 
-from PyQt6.QtCore import pyqtSignal, QObject, QUrl
-from PyQt6.QtNetwork import QNetworkReply, QNetworkRequest
+from PySide6.QtCore import Signal as QSignal, QObject, QUrl
+from PySide6.QtNetwork import QNetworkReply, QNetworkRequest
 
 from . import network
 
 
 class Documentation(QObject):
     """An instance of LilyPond documentation."""
-    versionLoaded = pyqtSignal(bool)
+    versionLoaded = QSignal(bool)
 
     def __init__(self, url):
         QObject.__init__(self)

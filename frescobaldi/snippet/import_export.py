@@ -29,9 +29,9 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtWidgets import QMessageBox, QTreeWidget, QTreeWidgetItem
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import QMessageBox, QTreeWidget, QTreeWidgetItem
 
 import app
 import appinfo

@@ -23,10 +23,10 @@ Extensions preferences.
 
 import re
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QFont, QStandardItem, QStandardItemModel
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QFont, QStandardItem, QStandardItemModel
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
     QHBoxLayout,

@@ -24,8 +24,8 @@ Normal ViMode.
 
 import re
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QTextCursor
 
 from . import handlerbase
 

@@ -14,12 +14,12 @@ TODO:
 """
 
 import re
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 
 import time
 import weakref
 
-from PyQt6.QtCore import QObject, QThread, pyqtSignal
+from PySide6.QtCore import QObject, QThread, Signal as QSignal
 
 import app
 import midihub
@@ -150,7 +150,7 @@ class MidiIn:
 
 
 class Listener(QThread):
-    receivedNoteEvent = pyqtSignal(midifile.event.NoteEvent)
+    receivedNoteEvent = QSignal(midifile.event.NoteEvent)
 
     def __init__(self, portmidiinput, pollingtime):
         super().__init__()

@@ -22,12 +22,13 @@ The snippets widget.
 """
 
 
-from PyQt6.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt
-from PyQt6.QtGui import QAction, QKeySequence
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt
+from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtWidgets import (
     QApplication, QCompleter, QFileDialog, QHBoxLayout, QLineEdit,
     QMenu, QMessageBox, QPushButton, QSplitter, QTextBrowser, QToolButton,
-    QTreeView, QVBoxLayout, QWidget)
+    QTreeView, QVBoxLayout, QWidget
+)
 
 import app
 import userguide

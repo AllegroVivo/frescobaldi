@@ -21,7 +21,7 @@
 Abstract base for viewer widgets
 """
 
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 
 class AbstractViewWidget(QWidget):

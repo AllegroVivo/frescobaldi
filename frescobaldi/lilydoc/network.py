@@ -21,8 +21,8 @@
 Network-related utility functions for LilyPond Documentation.
 """
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtNetwork import QNetworkReply, QNetworkRequest
+from PySide6.QtCore import QSettings
+from PySide6.QtNetwork import QNetworkReply, QNetworkRequest
 
 import app
 import i18n

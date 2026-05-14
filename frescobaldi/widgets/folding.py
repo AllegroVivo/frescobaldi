@@ -44,9 +44,9 @@ information.
 
 import collections
 
-from PyQt6.QtCore import QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer
-from PyQt6.QtGui import QPainter, QPalette
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtCore import QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer
+from PySide6.QtGui import QPainter, QPalette
+from PySide6.QtWidgets import QWidget
 
 import cursortools
 

@@ -30,16 +30,9 @@ from enum import Enum
 from shutil import copyfile
 from pathlib import Path
 
-from PyQt6.QtCore import (
-    QObject,
-    QSettings,
-    Qt
-)
-from PyQt6.QtGui import (
-    QStandardItem,
-    QStandardItemModel,
-)
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QObject, QSettings, Qt
+from PySide6.QtGui import QStandardItem, QStandardItemModel
+from PySide6.QtWidgets import (
     QAbstractItemView,
     QFileDialog,
     QHBoxLayout,

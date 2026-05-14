@@ -21,9 +21,9 @@
 
 import os
 
-from PyQt6.QtCore import QEventLoop, QTimer, Qt
-from PyQt6.QtGui import QGuiApplication, QFont, QPixmap
-from PyQt6.QtWidgets import QApplication, QSplashScreen
+from PySide6.QtCore import QEventLoop, QTimer, Qt
+from PySide6.QtGui import QGuiApplication, QFont, QPixmap
+from PySide6.QtWidgets import QApplication, QSplashScreen
 
 import app
 import appinfo

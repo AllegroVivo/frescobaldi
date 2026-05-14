@@ -22,9 +22,7 @@ A MIDI player for PyQt6.
 """
 
 
-
-
-from PyQt6.QtCore import pyqtSignal, Qt, QThread, QTimer
+from PySide6.QtCore import Signal as QSignal, Qt, QThread, QTimer
 
 import midifile.player
 
@@ -52,10 +50,10 @@ class Player(QThread, midifile.player.Player):
         any user object that might be added to an event
 
     """
-    stateChanged = pyqtSignal(bool)
-    time = pyqtSignal(int)
-    beat = pyqtSignal(int, int, int, int)
-    user = pyqtSignal(object)
+    stateChanged = QSignal(bool)
+    time = QSignal(int)
+    beat = QSignal(int, int, int, int)
+    user = QSignal(object)
     _instance = None
 
     def __init__(self, parent=None):

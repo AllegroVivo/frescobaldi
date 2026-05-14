@@ -22,9 +22,11 @@ Documentation preferences.
 """
 
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import (QComboBox, QCompleter, QFontComboBox,
-    QGridLayout, QLabel, QSpinBox, QVBoxLayout)
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtWidgets import (
+    QComboBox, QCompleter, QFontComboBox, QGridLayout, QLabel,
+    QSpinBox, QVBoxLayout
+)
 
 import app
 import qutil

@@ -24,9 +24,9 @@ Actions to engrave the music in the documents.
 
 import os
 
-from PyQt6.QtCore import QSettings, Qt, QUrl
-from PyQt6.QtGui import QAction, QKeySequence, QTextCursor
-from PyQt6.QtWidgets import QApplication, QMessageBox, QPushButton
+from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtGui import QAction, QKeySequence, QTextCursor
+from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton
 
 import app
 import actioncollection

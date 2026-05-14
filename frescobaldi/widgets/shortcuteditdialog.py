@@ -22,11 +22,12 @@ A dialog to edit the keyboard shortcuts for an action.
 """
 
 
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QKeySequence
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QRadioButton,
-    QVBoxLayout)
+    QVBoxLayout
+)
 
 
 import app

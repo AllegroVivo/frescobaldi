@@ -25,11 +25,12 @@ Session dialog for named session stuff.
 import os
 import json
 
-from PyQt6.QtCore import Qt, QSettings, QUrl
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import Qt, QSettings, QUrl
+from PySide6.QtWidgets import (
     QAbstractItemView, QCheckBox, QDialog, QDialogButtonBox, QFileDialog,
     QGridLayout, QGroupBox, QLabel, QListWidgetItem, QLineEdit, QMessageBox,
-    QPushButton, QVBoxLayout)
+    QPushButton, QVBoxLayout
+)
 
 import app
 import widgets.listedit

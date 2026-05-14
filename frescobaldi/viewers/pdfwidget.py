@@ -26,10 +26,13 @@ import collections
 import os
 import weakref
 
-from PyQt6.QtCore import pyqtSignal, QMargins, QPoint, QRect, Qt, QTimer, QUrl
-from PyQt6.QtGui import QCursor, QTextCharFormat
-from PyQt6.QtWidgets import (
-    QToolTip, QVBoxLayout, QHBoxLayout, QWidget, QToolBar)
+from PySide6.QtCore import (
+    Signal as QSignal, QMargins, QPoint, QRect, Qt, QTimer, QUrl
+)
+from PySide6.QtGui import QCursor, QTextCharFormat
+from PySide6.QtWidgets import (
+    QToolTip, QVBoxLayout, QHBoxLayout, QWidget, QToolBar
+)
 
 import qpageview
 import qpageview.layout
@@ -56,7 +59,7 @@ class AbstractPdfWidget(abstractviewwidget.AbstractViewWidget):
 
     # TODO: As much as possible should be moved to the base class.
 
-    zoomChanged = pyqtSignal(int, float) # mode, scale
+    zoomChanged = QSignal(int, float) # mode, scale
 
     def __init__(self, panel):
         """Creates the PDF View for the panel."""

@@ -22,11 +22,12 @@ A widget that provides a scheme selector, with New and Remove buttons.
 """
 
 
-from PyQt6.QtCore import QDir, QSettings, pyqtSignal, Qt
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QDir, QSettings, Signal as QSignal, Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (
     QComboBox, QHBoxLayout, QInputDialog, QLabel, QPushButton, QWidget,
-    QMenu, QFileDialog)
+    QMenu, QFileDialog
+)
 
 import app
 import icons
@@ -35,8 +36,8 @@ import os
 
 class SchemeSelector(QWidget):
 
-    currentChanged = pyqtSignal()
-    changed = pyqtSignal()
+    currentChanged = QSignal()
+    changed = QSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -22,7 +22,7 @@ Resources for styling some widgets.
 """
 
 
-from PyQt6.QtCore import QDir
+from PySide6.QtCore import QDir
 
 QDir.addSearchPath('css', __path__[0])
 

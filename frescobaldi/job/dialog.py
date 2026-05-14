@@ -21,7 +21,7 @@
 A Dialog to run an external command and simply show the log.
 """
 
-from PyQt6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize
 
 import log
 import qutil

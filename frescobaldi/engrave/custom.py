@@ -25,9 +25,11 @@ Custom engraving dialog.
 import os
 import collections
 
-from PyQt6.QtCore import QSettings, QSize, Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
-    QGridLayout, QLabel, QSpinBox, QTextEdit)
+from PySide6.QtCore import QSettings, QSize, Qt
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QDialog, QDialogButtonBox, QGridLayout,
+    QLabel, QSpinBox, QTextEdit
+)
 
 import ly.xml
 

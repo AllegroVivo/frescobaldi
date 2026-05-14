@@ -25,7 +25,7 @@ It initializes various stuff that's only relevant on macOS.
 """
 
 
-from PyQt6.QtCore import QTimer
+from PySide6.QtCore import QTimer
 
 import app
 

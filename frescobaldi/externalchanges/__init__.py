@@ -27,9 +27,7 @@ if needed.
 
 """
 
-
-
-from PyQt6.QtCore import QSettings, QTimer
+from PySide6.QtCore import QSettings, QTimer
 
 
 def enabled():

@@ -45,7 +45,7 @@ class AbstractMatcher:
         self.updateSettings()
 
     def updateSettings(self):
-        from PyQt6.QtCore import QSettings
+        from PySide6.QtCore import QSettings
         s = QSettings()
         s.beginGroup("editor_highlighting")
         self._match_duration = s.value("match", 1, int) * 1000

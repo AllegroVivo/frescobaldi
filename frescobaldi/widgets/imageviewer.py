@@ -22,9 +22,9 @@ A simple scrollarea that can display an image.
 """
 
 
-from PyQt6.QtCore import pyqtSignal, QMimeData, QSize, QRect, Qt
-from PyQt6.QtGui import QColor, QDrag, QImage, QPainter, QPalette, QPixmap
-from PyQt6.QtWidgets import QApplication, QScrollArea, QSizePolicy, QWidget
+from PySide6.QtCore import Signal as QSignal, QMimeData, QSize, QRect, Qt
+from PySide6.QtGui import QColor, QDrag, QImage, QPainter, QPalette, QPixmap
+from PySide6.QtWidgets import QApplication, QScrollArea, QSizePolicy, QWidget
 
 
 __all__ = ['ImageViewer']
@@ -37,7 +37,7 @@ DRAG = 2
 
 class ImageViewer(QScrollArea):
 
-    actualSizeChanged = pyqtSignal(bool)
+    actualSizeChanged = QSignal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent, alignment=Qt.AlignmentFlag.AlignCenter)

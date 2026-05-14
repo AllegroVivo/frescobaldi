@@ -23,7 +23,7 @@ Code to load and manage PDF documents to view.
 
 import itertools
 
-from PyQt6.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 import app
 import plugin

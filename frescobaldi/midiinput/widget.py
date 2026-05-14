@@ -5,10 +5,12 @@ MIDI input controls
 
 import weakref
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QGroupBox,
-                             QHBoxLayout, QLabel, QRadioButton, QToolButton,
-                             QVBoxLayout, QWidget)
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QRadioButton, QToolButton,
+    QVBoxLayout, QWidget
+)
 
 import app
 

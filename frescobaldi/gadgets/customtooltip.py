@@ -22,9 +22,9 @@ Displays any widget as a tooltip.
 """
 
 
-from PyQt6.QtCore import QEvent, QObject, QTimer, Qt
-from PyQt6.QtGui import QCursor
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QEvent, QObject, QTimer, Qt
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QApplication
 
 
 __all__ = ['hide', 'show']

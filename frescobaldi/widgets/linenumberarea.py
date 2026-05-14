@@ -21,9 +21,9 @@
 A line number area to be used in a QPlainTextEdit.
 """
 
-from PyQt6.QtCore import QEvent, QPointF, QRectF, QSize, Qt
-from PyQt6.QtGui import QFontMetrics, QMouseEvent, QPainter
-from PyQt6.QtWidgets import QApplication, QWidget
+from PySide6.QtCore import QEvent, QPointF, QRectF, QSize, Qt
+from PySide6.QtGui import QFontMetrics, QMouseEvent, QPainter
+from PySide6.QtWidgets import QApplication, QWidget
 
 
 class LineNumberArea(QWidget):

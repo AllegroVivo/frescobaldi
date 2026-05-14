@@ -23,7 +23,7 @@ All kinds of more or less generally usable Qt gadgets.
 Most of them interact with Qt widgets, filtering events,
 customizing behaviour etc.
 
-These modules only depend on PyQt.
+These modules only depend on PySide6.
 
 """
 

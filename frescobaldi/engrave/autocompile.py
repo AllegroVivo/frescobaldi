@@ -34,7 +34,7 @@ The log is not displayed.
 
 import contextlib
 
-from PyQt6.QtCore import QSettings, Qt, QTimer
+from PySide6.QtCore import QSettings, Qt, QTimer
 
 import app
 import documentinfo

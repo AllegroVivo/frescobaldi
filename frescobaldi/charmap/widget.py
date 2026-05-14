@@ -25,9 +25,10 @@ The special characters tool widget.
 import sys
 import itertools
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import (QComboBox, QScrollArea, QSizePolicy, QVBoxLayout,
-                             QWidget)
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import (
+    QComboBox, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+)
 
 import app
 import widgets.charmap

@@ -22,11 +22,10 @@ A basic auto-indenter for a textedit widget.
 """
 
 
-
 import contextlib
 
-from PyQt6.QtCore import QEvent, QObject, Qt
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtCore import QEvent, QObject, Qt
+from PySide6.QtGui import QTextCursor
 
 
 class Indenter(QObject):

@@ -27,15 +27,15 @@ When a character is clicked, a signal is emitted.
 
 import unicodedata
 
-from PyQt6.QtCore import pyqtSignal, QEvent, QRect, QSize, Qt
-from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QPalette, QPen
-from PyQt6.QtWidgets import QToolTip, QWhatsThis, QWidget
+from PySide6.QtCore import Signal as QSignal, QEvent, QRect, QSize, Qt
+from PySide6.QtGui import QFont, QFontMetrics, QPainter, QPalette, QPen
+from PySide6.QtWidgets import QToolTip, QWhatsThis, QWidget
 
 
 class CharMap(QWidget):
     """A widget displaying a table of characters."""
-    characterSelected = pyqtSignal(str)
-    characterClicked = pyqtSignal(str)
+    characterSelected = QSignal(str)
+    characterClicked = QSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)

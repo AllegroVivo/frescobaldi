@@ -34,7 +34,7 @@ import util
 import textedit
 import pointandclick
 
-from PyQt6.QtCore import QPointF, QRectF
+from PySide6.QtCore import QPointF, QRectF
 
 
 # cache point and click handlers for PDF documents

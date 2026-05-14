@@ -23,9 +23,9 @@ Base class for viewers' context menus.
 
 import os
 
-from PyQt6.QtCore import QObject, QUrl
-from PyQt6.QtGui import QAction, QActionGroup
-from PyQt6.QtWidgets import QApplication, QMenu
+from PySide6.QtCore import QObject, QUrl
+from PySide6.QtGui import QAction, QActionGroup
+from PySide6.QtWidgets import QApplication, QMenu
 
 import app
 import icons

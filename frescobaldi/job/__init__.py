@@ -28,7 +28,7 @@ import os
 import platform
 import time
 
-from PyQt6.QtCore import QCoreApplication, QProcess, QProcessEnvironment
+from PySide6.QtCore import QCoreApplication, QProcess, QProcessEnvironment
 
 import signals
 

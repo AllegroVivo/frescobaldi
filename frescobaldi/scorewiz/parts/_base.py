@@ -24,8 +24,9 @@ Base types for parts.
 
 import collections
 
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QHBoxLayout,
-                             QLabel, QSpinBox)
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox
+)
 
 import listmodel
 import ly.dom

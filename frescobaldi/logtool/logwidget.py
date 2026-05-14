@@ -28,10 +28,11 @@ import re
 import sys
 import weakref
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import (
-    QColor, QTextCharFormat, QTextCursor, QTextFormat)
-from PyQt6.QtWidgets import QTextEdit
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import (
+    QColor, QTextCharFormat, QTextCursor, QTextFormat
+)
+from PySide6.QtWidgets import QTextEdit
 
 import app
 import log

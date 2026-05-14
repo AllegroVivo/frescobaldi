@@ -21,8 +21,8 @@
 Base ExtensionWidget for extensions
 """
 
-from PyQt6.QtCore import Qt, QObject
-from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt, QObject
+from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 import app
 

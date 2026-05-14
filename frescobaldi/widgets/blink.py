@@ -21,15 +21,15 @@
 Shortly blinks a region on a widget.
 """
 
-from PyQt6.QtCore import QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFontMetrics, QPainter, QPalette, QPen
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtCore import QTimer, Signal as QSignal
+from PySide6.QtGui import QColor, QFontMetrics, QPainter, QPalette, QPen
+from PySide6.QtWidgets import QWidget
 
 
 class Blinker(QWidget):
     """Can draw a blinking region above its parent widget."""
 
-    finished = pyqtSignal()
+    finished = QSignal()
 
     lineWidth = 3
     radius = 3

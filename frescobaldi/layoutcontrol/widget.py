@@ -24,9 +24,11 @@ The Layout Control options widget.
 
 import sys
 
-from PyQt6.QtCore import pyqtSignal, QSettings
-from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLineEdit, QToolButton,
-                             QVBoxLayout, QWidget)
+from PySide6.QtCore import Signal as QSignal, QSettings
+from PySide6.QtWidgets import (
+    QCheckBox, QHBoxLayout, QLineEdit, QToolButton, QVBoxLayout, 
+    QWidget
+)
 
 import app
 import icons
@@ -37,7 +39,7 @@ import userguide
 
 class Widget(QWidget):
 
-    optionsChanged = pyqtSignal()
+    optionsChanged = QSignal()
 
     def __init__(self, tool):
         super().__init__(tool)

@@ -28,20 +28,20 @@ import sys
 from time import perf_counter
 from traceback import extract_tb
 
-from PyQt6.QtCore import (
+from PySide6.QtCore import (
     QDir,
     QObject,
     QSettings,
     QSize,
     Qt
 )
-from PyQt6.QtGui import (
+from PySide6.QtGui import (
     QFont,
     QIcon,
     QStandardItem,
     QStandardItemModel
 )
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
     QDialog,
@@ -515,7 +515,7 @@ class FailedTree(QTreeView):
             # (with option to write an email to maintainer)
 
             import traceback
-            from PyQt6.QtWidgets import QMessageBox
+            from PySide6.QtWidgets import QMessageBox
             import appinfo
             row = item.row()
             name_item = parent.child(row, 0)
@@ -845,7 +845,7 @@ class Extensions(QObject):
         """Show a warning message box if extension(s) could either not
         be loaded or produced errors while parsing the extension infos."""
 
-        from PyQt6.QtCore import QCoreApplication
+        from PySide6.QtCore import QCoreApplication
         import appinfo
         import qutil
         import widgets.dialog
