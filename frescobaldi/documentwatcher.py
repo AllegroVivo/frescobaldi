@@ -33,7 +33,7 @@ Use start() to start the document watcher, and stop() to stop it if desired.
 import contextlib
 import os
 
-from PyQt6.QtCore import QFileSystemWatcher, QUrl
+from PySide6.QtCore import QFileSystemWatcher, QUrl
 
 import app
 import plugin

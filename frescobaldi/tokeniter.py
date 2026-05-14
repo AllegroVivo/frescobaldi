@@ -33,7 +33,7 @@ use update().
 
 import collections
 
-from PyQt6.QtGui import QTextBlock, QTextCursor
+from PySide6.QtGui import QTextBlock, QTextCursor
 
 import cursortools
 import highlighter

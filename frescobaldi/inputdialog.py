@@ -22,9 +22,9 @@ Simple dialogs to ask input from the user.
 """
 
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QCompleter, QColorDialog, QWidget
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QCompleter, QColorDialog, QWidget
 
 import app
 import widgets.dialog

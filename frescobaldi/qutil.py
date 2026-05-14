@@ -26,9 +26,9 @@ import contextlib
 import re
 import weakref
 
-from PyQt6.QtCore import QEventLoop, QSettings, QSize, QTimer, Qt
-from PyQt6.QtGui import QAction, QColor, QKeySequence
-from PyQt6.QtWidgets import QApplication, QProgressDialog
+from PySide6.QtCore import QEventLoop, QSettings, QSize, QTimer, Qt
+from PySide6.QtGui import QAction, QColor, QKeySequence
+from PySide6.QtWidgets import QApplication, QProgressDialog
 
 import appinfo
 

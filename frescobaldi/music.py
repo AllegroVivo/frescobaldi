@@ -21,8 +21,6 @@
 Frescobaldi's extensions of ly.music.
 """
 
-
-
 import ly.music.items
 import fileinfo
 

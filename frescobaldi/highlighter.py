@@ -24,9 +24,10 @@ about a document's contents.
 
 
 
-from PyQt6.QtGui import (
+from PySide6.QtGui import (
     QColor, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat,
-    QTextCursor, QTextDocument)
+    QTextCursor, QTextDocument
+)
 
 
 import ly.lex

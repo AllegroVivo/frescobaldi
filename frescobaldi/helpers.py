@@ -28,9 +28,9 @@ import re
 import subprocess
 import sys
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QMessageBox
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QMessageBox
 
 def shell_split(cmd):
     """Split a string like the UNIX shell, returning a list.

@@ -24,7 +24,7 @@ Infrastructure to get local variables embedded in comments in a document.
 
 import re
 
-from PyQt6.QtCore import QTimer
+from PySide6.QtCore import QTimer
 
 import document
 import signals

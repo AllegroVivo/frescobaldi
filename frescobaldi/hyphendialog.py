@@ -27,8 +27,10 @@ import glob
 import locale
 import os
 
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QListWidget, QVBoxLayout
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtWidgets import (
+    QDialog, QDialogButtonBox, QLabel, QListWidget, QVBoxLayout
+)
 
 import app
 import qutil

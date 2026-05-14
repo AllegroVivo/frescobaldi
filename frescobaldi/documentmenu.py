@@ -22,8 +22,8 @@ The Documents menu.
 """
 
 
-from PyQt6.QtGui import QAction, QActionGroup, QIcon
-from PyQt6.QtWidgets import QMenu
+from PySide6.QtGui import QAction, QActionGroup, QIcon
+from PySide6.QtWidgets import QMenu
 
 import app
 import icons

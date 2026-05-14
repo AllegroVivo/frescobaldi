@@ -22,8 +22,8 @@ A QNetworkAccessManager subclass with easy registration of custom url schemes.
 """
 
 
-from PyQt6.QtCore import QThread, QTimer, QUrl
-from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
+from PySide6.QtCore import QThread, QTimer, QUrl
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 
 
 class NetworkAccessManager(QNetworkAccessManager):

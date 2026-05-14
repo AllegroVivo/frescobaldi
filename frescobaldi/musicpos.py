@@ -22,8 +22,8 @@ Shows the time position of the text cursor in the music.
 """
 
 
-from PyQt6.QtCore import QTimer
-from PyQt6.QtWidgets import QLabel
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QLabel
 
 import weakref
 

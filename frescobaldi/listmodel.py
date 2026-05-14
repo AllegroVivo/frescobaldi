@@ -24,7 +24,7 @@ Functions are used to present the data from an item for a role.
 There are some predefined functions to use in this module.
 """
 
-from PyQt6.QtCore import QAbstractListModel, Qt
+from PySide6.QtCore import QAbstractListModel, Qt
 
 
 def display(item):

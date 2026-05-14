@@ -28,9 +28,9 @@ import itertools
 import os
 import platform
 
-from PyQt6.QtCore import pyqtSignal, QMargins, QSettings, Qt
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
+from PySide6.QtCore import Signal, QMargins, QSettings, Qt
+from PySide6.QtWidgets import QMessageBox
+from PySide6.QtPrintSupport import QPrinter, QPrintDialog
 
 import app
 import icons

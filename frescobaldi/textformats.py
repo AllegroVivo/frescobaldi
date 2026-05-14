@@ -24,9 +24,9 @@ Loading and defaults for the different textformats used for Syntax Highlighting.
 
 import platform
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QColor, QFont, QPalette, QTextCharFormat, QTextFormat
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import QColor, QFont, QPalette, QTextCharFormat, QTextFormat
+from PySide6.QtWidgets import QApplication
 
 import app
 import ly.colorize

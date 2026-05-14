@@ -28,14 +28,17 @@ import os
 import platform
 import weakref
 
-from PyQt6.QtCore import (pyqtSignal, QByteArray, QDir, QMimeData, QSettings,
-                          QSize, Qt, QUrl)
-from PyQt6.QtGui import (QAction, QGuiApplication, QKeySequence, QTextCursor,
-                         QTextDocument)
-from PyQt6.QtPrintSupport import (QAbstractPrintDialog, QPrintDialog, QPrinter)
-from PyQt6.QtWidgets import (QApplication, QFileDialog, QMainWindow,
-                             QMenu, QMessageBox, QPlainTextEdit, QVBoxLayout,
-                             QWhatsThis, QWidget, QInputDialog)
+from PySide6.QtCore import (
+    Signal, QByteArray, QDir, QMimeData, QSettings, QSize, Qt, QUrl
+)
+from PySide6.QtGui import (
+    QAction, QGuiApplication, QKeySequence, QTextCursor, QTextDocument
+)
+from PySide6.QtPrintSupport import QAbstractPrintDialog, QPrintDialog, QPrinter
+from PySide6.QtWidgets import (
+    QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QPlainTextEdit,
+    QVBoxLayout, QWhatsThis, QWidget, QInputDialog
+)
 
 import app
 import backup
@@ -68,20 +71,20 @@ import file_import
 class MainWindow(QMainWindow):
 
     # emitted when the MainWindow will close
-    aboutToClose = pyqtSignal()
+    aboutToClose = Signal()
 
     # only emitted when this is the last MainWindow to close
-    aboutToCloseLast = pyqtSignal()
+    aboutToCloseLast = Signal()
 
     # emitted when all editor documents have been closed
-    allDocumentsClosed = pyqtSignal()
+    allDocumentsClosed = Signal()
 
     # both signals emit (current, previous)
-    currentDocumentChanged = pyqtSignal(document.Document, document.Document)
-    currentViewChanged = pyqtSignal(view.View, view.View)
+    currentDocumentChanged = Signal(document.Document, document.Document)
+    currentViewChanged = Signal(view.View, view.View)
 
     # emitted when whether there is a selection changes
-    selectionStateChanged = pyqtSignal(bool)
+    selectionStateChanged = Signal(bool)
 
     def __init__(self, other=None):
         """Creates a new MainWindow.

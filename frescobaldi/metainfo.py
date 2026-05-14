@@ -24,7 +24,7 @@ Store meta information about documents.
 
 import time
 
-from PyQt6.QtCore import QSettings, QUrl
+from PySide6.QtCore import QSettings, QUrl
 
 import app
 import plugin

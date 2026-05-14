@@ -25,10 +25,11 @@ A dialog where the user can edit a short fragment of a larger document.
 """
 
 
-from PyQt6.QtCore import QEvent, QSettings, QSize
-from PyQt6.QtGui import (QAction, QKeySequence, QTextCharFormat, QTextCursor,
-                         QTextDocument)
-from PyQt6.QtWidgets import QPlainTextDocumentLayout, QPlainTextEdit
+from PySide6.QtCore import QEvent, QSettings, QSize
+from PySide6.QtGui import (
+    QAction, QKeySequence, QTextCharFormat, QTextCursor, QTextDocument
+)
+from PySide6.QtWidgets import QPlainTextDocumentLayout, QPlainTextEdit
 
 import app
 import actioncollectionmanager

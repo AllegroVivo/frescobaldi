@@ -25,9 +25,9 @@ Stuff dealing with the QSessionManager.
 import os
 import sys
 
-from PyQt6.QtCore import QObject, QSettings, Qt, QUrl
-from PyQt6.QtGui import QSessionManager
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QObject, QSettings, Qt, QUrl
+from PySide6.QtGui import QSessionManager
+from PySide6.QtWidgets import QApplication
 
 import appinfo
 import app

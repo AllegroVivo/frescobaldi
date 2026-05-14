@@ -24,8 +24,8 @@ The tab bar with the documents.
 
 import platform
 
-from PyQt6.QtCore import QSettings, Qt, QUrl, pyqtSignal
-from PyQt6.QtWidgets import QMenu, QTabBar
+from PySide6.QtCore import QSettings, Qt, QUrl, Signal
+from PySide6.QtWidgets import QMenu, QTabBar
 
 import app
 import icons
@@ -39,7 +39,7 @@ import util
 class TabBar(QTabBar):
     """The tabbar above the editor window."""
 
-    currentDocumentChanged = pyqtSignal(document.Document)
+    currentDocumentChanged = Signal(document.Document)
 
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -24,12 +24,11 @@ A widget and dialog to show an output preview of a LilyPond document.
 
 import os
 
-from PyQt6.QtCore import (
-    QSize,
-    Qt
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import (
+    QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
+    QStackedLayout, QVBoxLayout, QWidget
 )
-from PyQt6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox, QHBoxLayout,
-                             QLabel, QStackedLayout, QVBoxLayout, QWidget)
 
 import app
 import icons

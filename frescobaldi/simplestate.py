@@ -35,8 +35,6 @@ The first word is always the mode of the file (e.g. 'lilypond', 'html', etc.).
 
 """
 
-
-
 import ly.lex.lilypond
 import ly.lex.scheme
 import ly.lex.html

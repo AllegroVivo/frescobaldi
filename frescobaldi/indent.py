@@ -22,7 +22,7 @@ Indent and auto-indent.
 """
 
 
-from PyQt6.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 import ly.lex
 import ly.indent

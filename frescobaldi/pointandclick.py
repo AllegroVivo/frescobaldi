@@ -25,8 +25,8 @@ Generic Point and Click handling.
 import os
 import collections
 
-from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QTextCursor
 
 import app
 import scratchdir

@@ -35,8 +35,6 @@ not with portmidi directly.
 
 """
 
-
-
 import portmidi
 import signals
 

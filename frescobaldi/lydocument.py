@@ -31,9 +31,7 @@ discard it.
 
 """
 
-
-
-from PyQt6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 
 import ly.document
 import tokeniter

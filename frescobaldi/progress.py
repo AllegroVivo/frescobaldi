@@ -22,7 +22,7 @@ Manages the progress bar in the status bar of ViewSpaces.
 """
 
 
-from PyQt6.QtCore import Qt
+from PySide6.QtCore import Qt
 
 import app
 import job

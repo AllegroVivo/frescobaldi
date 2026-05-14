@@ -23,8 +23,8 @@ the current line, marked lines, search results etc.
 """
 
 
-from PyQt6.QtCore import QEvent
-from PyQt6.QtGui import QColor, QTextCharFormat, QTextFormat
+from PySide6.QtCore import QEvent
+from PySide6.QtGui import QColor, QTextCharFormat, QTextFormat
 
 import app
 import plugin

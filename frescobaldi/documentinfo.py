@@ -28,8 +28,9 @@ import os
 import re
 import collections
 
-from PyQt6.QtCore import (
-    QCoreApplication, QObject, QSettings, QThread, QTimer, QUrl, pyqtSignal)
+from PySide6.QtCore import (
+    QCoreApplication, QObject, QSettings, QThread, QTimer, QUrl, Signal
+)
 
 import document
 import qsettings
@@ -414,4 +415,4 @@ class _Worker(QObject):
         doc = lydocument.Document(document)
         return music.Document(doc)
 
-    finished = pyqtSignal("PyQt_PyObject")  # WorkerData
+    finished = Signal("PySide_PyObject")  # WorkerData

@@ -25,10 +25,11 @@ The show() function displays a tooltip showing part of a Document.
 """
 
 
-from PyQt6.QtCore import QSize
-from PyQt6.QtGui import (
-    QFont, QPainter, QPixmap, QTextCursor, QTextDocument)
-from PyQt6.QtWidgets import QLabel
+from PySide6.QtCore import QSize
+from PySide6.QtGui import (
+    QFont, QPainter, QPixmap, QTextCursor, QTextDocument
+)
+from PySide6.QtWidgets import QLabel
 
 import metainfo
 import tokeniter

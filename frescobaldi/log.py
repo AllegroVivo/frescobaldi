@@ -24,10 +24,11 @@ A Log shows the output of a Job.
 
 import contextlib
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import (QFont, QPalette, QTextCharFormat, QTextCursor,
-                         QTextFormat)
-from PyQt6.QtWidgets import QApplication, QTextBrowser
+from PySide6.QtCore import QSettings
+from PySide6.QtGui import (
+    QFont, QPalette, QTextCharFormat, QTextCursor, QTextFormat
+)
+from PySide6.QtWidgets import QApplication, QTextBrowser
 
 import job
 import qutil

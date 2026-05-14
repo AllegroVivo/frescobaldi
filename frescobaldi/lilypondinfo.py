@@ -30,8 +30,8 @@ import platform
 import re
 import shutil
 
-from PyQt6.QtCore import QEventLoop, QSettings, QStandardPaths, QTimer
-from PyQt6.QtWidgets import QProgressDialog
+from PySide6.QtCore import QEventLoop, QSettings, QStandardPaths, QTimer
+from PySide6.QtWidgets import QProgressDialog
 
 import app
 import cachedproperty

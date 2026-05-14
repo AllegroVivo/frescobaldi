@@ -32,7 +32,7 @@ import platform
 import re
 import unicodedata
 
-from PyQt6.QtCore import QDir, QUrl
+from PySide6.QtCore import QDir, QUrl
 
 import appinfo
 import variables

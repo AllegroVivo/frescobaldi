@@ -28,11 +28,12 @@ multiple views.
 import contextlib
 import weakref
 
-from PyQt6.QtCore import QEvent, Qt, pyqtSignal
-from PyQt6.QtGui import QAction, QKeySequence, QPixmap
-from PyQt6.QtWidgets import (
+from PySide6.QtCore import QEvent, Qt, pyqtSignal
+from PySide6.QtGui import QAction, QKeySequence, QPixmap
+from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QMenu, QProgressBar, QSplitter,
-    QStackedWidget, QVBoxLayout, QWidget)
+    QStackedWidget, QVBoxLayout, QWidget
+)
 
 import actioncollection
 import app

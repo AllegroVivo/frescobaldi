@@ -24,7 +24,7 @@ Highlights matching tokens such as { and }, << and >> etc.
 
 import weakref
 
-from PyQt6.QtGui import QAction, QTextCursor
+from PySide6.QtGui import QAction, QTextCursor
 
 import app
 import plugin
