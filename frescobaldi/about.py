@@ -22,23 +22,22 @@ About dialog.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
-from PySide6.QtCore import QSettings, QSize, Qt, QUrl
+from PySide6.QtCore import QSize, Qt, QUrl
 from PySide6.QtWidgets import (
     QDialog, QDialogButtonBox, QLabel, QLayout, QTabWidget, QTextBrowser,
     QVBoxLayout, QWidget
 )
 
-import app
 import appinfo
-import icons
-import helpers
 import debuginfo
+import helpers
+import icons
 import userguide.page
 
 if TYPE_CHECKING:
-    pass
+    from .mainwindow import MainWindow
 
 
 class AboutDialog(QDialog):
@@ -47,7 +46,7 @@ class AboutDialog(QDialog):
     Most of the information is taken from the info module.
 
     """
-    def __init__(self, mainwindow):
+    def __init__(self, mainwindow: MainWindow):
         """Creates the About dialog. You can simply exec() it."""
         super().__init__(mainwindow)
 
@@ -71,7 +70,7 @@ class AboutDialog(QDialog):
 
 class About(QWidget):
     """About widget."""
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
 
         layout = QVBoxLayout()
@@ -88,13 +87,14 @@ class About(QWidget):
         text.linkActivated.connect(self.openLink)
         layout.addWidget(text)
 
-    def openLink(self, url):
+    @staticmethod
+    def openLink(url: str) -> None:
         helpers.openUrl(QUrl(url))
 
 
 class Credits(QTextBrowser):
     """Credits widget."""
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setOpenLinks(False)
         self.anchorClicked.connect(helpers.openUrl)
@@ -103,22 +103,24 @@ class Credits(QTextBrowser):
 
 class Version(QTextBrowser):
     """Version information."""
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setPlainText(debuginfo.version_info_string())
 
 
-def html():
-    """Returns a HTML string for the about dialog."""
+def html() -> str:
+    """Returns an HTML string for the About dialog."""
     appname = appinfo.appname
-    version = _("Version {version}").format(version = appinfo.version)
+    version = _("Version {version}").format(version=appinfo.version)
     description = _("A LilyPond Music Editor")
     copyright = _("Copyright (c) {year} by {author}").format(
-        year = "2008-2022",
-        author = """<a href="mailto:{}" title="{}">{}</a>""".format(
+        year="2008-2022",
+        author="""<a href="mailto:{}" title="{}">{}</a>""".format(
             appinfo.maintainer_email,
             _("Send an e-mail message to the maintainers."),
-            appinfo.maintainer))
+            appinfo.maintainer
+        )
+    )
     # L10N: Translate this sentence and fill in your own name to have it appear in the About Dialog.
     translator = _("Translated by Your Name.")
     if translator == "Translated by Your Name.":
@@ -126,7 +128,8 @@ def html():
     else:
         translator = f"<p>{translator}</p>"
     license = _("Licensed under the {gpl}.").format(
-        gpl = """<a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>""")
+        gpl="""<a href="https://www.gnu.org/licenses/gpl.html">GNU GPL</a>"""
+    )
     homepage = appinfo.url
 
     return html_template.format(**locals())
@@ -144,4 +147,3 @@ html_template = """<html>
 </div></body>
 </html>
 """
-

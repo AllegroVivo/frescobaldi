@@ -41,14 +41,19 @@ The module may provide the user with a means to change the keyboard shortcuts,
 which then should call setShortcuts() to do it. The module may also query the
 currently set shortcuts for an action using shortcuts().
 """
-
+from __future__ import annotations
 
 import weakref
+from typing import TYPE_CHECKING, Callable, Optional, Dict, List
 
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtWidgets import QWidget
 
 import app
+
+if TYPE_CHECKING:
+    pass
 
 
 class ActionCollectionBase:
@@ -58,21 +63,21 @@ class ActionCollectionBase:
     in the 'name' class attribute.
 
     """
-    def __init__(self, widget=None):
-        self._widget = weakref.ref(widget) if widget else lambda: None
-        self._actions = {}  # maps name to action
-        self._defaults = {} # maps name to default list of shortcuts
+    def __init__(self, widget: Optional[QWidget] = None):
+        self._widget: Callable[[], Optional[QWidget]] = weakref.ref(widget) if widget else lambda: None
+        self._actions: Dict[str, QAction] = {}  # maps name to action
+        self._defaults: Dict[str, List[QKeySequence]] = {}  # maps name to default list of shortcuts
         app.settingsChanged.connect(self.load)
 
-    def widget(self):
+    def widget(self) -> Optional[QWidget]:
         """Returns the widget given on construction or None."""
         return self._widget()
 
-    def setDefaultShortcuts(self, name, shortcuts):
+    def setDefaultShortcuts(self, name: str, shortcuts: List[QKeySequence]) -> None:
         """Set a default list of QKeySequence objects for the named action."""
         self._defaults[name] = shortcuts
 
-    def defaultShortcuts(self, name):
+    def defaultShortcuts(self, name: str) -> Optional[List[QKeySequence]]:
         """Returns the default shortcuts (list of QKeySequences) for the action.
 
         If not defined, returns None.
@@ -80,37 +85,37 @@ class ActionCollectionBase:
         """
         return self._defaults.get(name)
 
-    def actions(self):
+    def actions(self) -> Dict[str, Optional[QAction]]:
         """Returns the dictionary with actions."""
         return self._actions
 
-    def defaults(self):
+    def defaults(self) -> Dict[str, List[QKeySequence]]:
         """Returns the dictionary with actions that have a default shortcut."""
         return self._defaults
 
-    def shortcuts(self, name):
+    def shortcuts(self, name: str) -> Optional[List[QKeySequence]]:
         """Returns the list of shortcuts for the named action, or None."""
         try:
             return self._actions[name].shortcuts()
         except KeyError:
             pass
 
-    def setShortcuts(self, name, shortcuts):
+    def setShortcuts(self, name: str, shortcuts: List[QKeySequence]) -> None:
         """Implement to set the shortcuts list for our action."""
         pass
 
-    def settingsGroup(self):
+    def settingsGroup(self) -> QSettings:
         """Returns settings group to load/save shortcuts from or to."""
         s = QSettings()
         scheme = s.value("shortcut_scheme", "default", str)
         s.beginGroup(f"shortcuts/{scheme}/{self.name}")
         return s
 
-    def load(self):
+    def load(self) -> None:
         """Implement to load shortcuts from our settingsGroup()."""
         pass
 
-    def title(self):
+    def title(self) -> str:
         """If this returns a meaningful title, actions can be grouped in the shortcut settings dialog."""
         pass
 
@@ -128,7 +133,7 @@ class ActionCollection(ActionCollectionBase):
     Set the titles for the actions in the translateUI() method.
 
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         """Creates the ActionCollection.
 
         parent is an optional widget that is also the parent for the created actions.
@@ -138,12 +143,12 @@ class ActionCollection(ActionCollectionBase):
         self.createActions(parent)
         self._actions = dict(i for i in self.__dict__.items() if not i[0].startswith('_'))
         self.storeDefaults()
-        self.load(False) # load the shortcuts without resettings defaults
+        self.load(False)  # load the shortcuts without resetting defaults
         # N.B. This relies on the ActionCollection's QActions not getting
         # deleted in C++ other than through being garbage-collected in Python.
         app.translateUI(self)
 
-    def createActions(self, parent=None):
+    def createActions(self, parent: Optional[QWidget] = None) -> None:
         """Should add actions as instance attributes.
 
         The QActions should get icons and shortcuts. Texts should be set
@@ -152,11 +157,11 @@ class ActionCollection(ActionCollectionBase):
         """
         pass
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         """Should (re)translate all the titles of the actions."""
         pass
 
-    def storeDefaults(self):
+    def storeDefaults(self) -> None:
         """Saves the preset default QKeySequence lists for the actions."""
         for name, action in self._actions.items():
             if action.shortcuts():
