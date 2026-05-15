@@ -22,9 +22,10 @@ The Score Wizard dialog.
 """
 
 
-from PyQt6.QtCore import pyqtSignal, QSettings, QUrl
-from PyQt6.QtWidgets import (
-    QDialog, QDialogButtonBox, QGroupBox, QTabWidget, QVBoxLayout, QWidget)
+from PySide6.QtCore import pyqtSignal, QSettings, QUrl
+from PySide6.QtWidgets import (
+    QDialog, QDialogButtonBox, QGroupBox, QTabWidget, QVBoxLayout, QWidget
+)
 
 import app
 import indent

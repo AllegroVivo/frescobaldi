@@ -92,13 +92,13 @@ qt_version = QLibraryInfo.version()
 if importlib.util.find_spec('PySide6.QtSvg') is None:
     error("Missing Qt module",
         "Frescobaldi cannot start because the "
-        "PyQt6.QtSvg module is not installed.")
+        "PySide6.QtSvg module is not installed.")
 
 # Check QtPdf availability
 if importlib.util.find_spec('PySide6.QtPdf') is None:
     error("Missing Qt module",
         "Frescobaldi cannot start because the "
-        "PyQt6.QtPdf module is not installed.")
+        "PySide6.QtPdf module is not installed.")
 
 # Check qpageview availability
 if importlib.util.find_spec('qpageview') is None:

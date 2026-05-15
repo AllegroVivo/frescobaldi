@@ -28,7 +28,7 @@ import re
 import tempfile
 
 from PySide6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
     QHBoxLayout,

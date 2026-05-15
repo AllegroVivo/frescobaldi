@@ -47,14 +47,14 @@ def app_version():
     return appinfo.version
 
 @_catch_unknown
-def pyqt_version():
-    import PyQt6.QtCore
-    return PyQt6.QtCore.PYQT_VERSION_STR
+def pyside_version():
+    import PySide6.QtCore
+    return PySide6.__version__
 
 @_catch_unknown
 def qt_version():
-    import PyQt6.QtCore
-    return PyQt6.QtCore.QT_VERSION_STR
+    import PySide6.QtCore
+    return PySide6.QtCore.qVersion()
 
 @_catch_unknown
 def python_version():
@@ -118,7 +118,7 @@ def version_info_named():
         yield "on commit", commit[0]
     yield "python-ly", ly_version()
     yield "Qt", qt_version()
-    yield "PyQt", pyqt_version()
+    yield "PySide", pyside_version()
     yield "qpageview", qpageview_version()
     yield "OS", operating_system()
     if platform.system() == 'Darwin':
