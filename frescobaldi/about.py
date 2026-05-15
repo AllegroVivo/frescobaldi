@@ -20,7 +20,9 @@
 """
 About dialog.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QSettings, QSize, Qt, QUrl
 from PySide6.QtWidgets import (
@@ -34,6 +36,9 @@ import icons
 import helpers
 import debuginfo
 import userguide.page
+
+if TYPE_CHECKING:
+    pass
 
 
 class AboutDialog(QDialog):
