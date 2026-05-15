@@ -79,7 +79,7 @@ Module imports: one per line. First the Python standard library imports, then Py
 import os                       # stdlib imports
 import sys
 
-from PyQt6.QtCore import ...    # PyQt imports
+from PySide6.QtCore import ...    # PySide imports
 
 import app                      # generic Frescobaldi imports
 import icons

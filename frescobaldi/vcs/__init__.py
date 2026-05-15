@@ -76,7 +76,7 @@ def app_is_git_controlled():
                 global app_repo
                 app_repo = apprepo.Repo()
             else:
-                from PyQt6.QtWidgets import QMessageBox
+                from PySide6.QtWidgets import QMessageBox
                 QMessageBox.warning(None,
                                     _("Git not found"),
                                     _("Frescobaldi is run from within a Git "

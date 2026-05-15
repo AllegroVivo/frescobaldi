@@ -18,7 +18,7 @@
 # See http://www.gnu.org/licenses/ for more information.
 
 """
-A MIDI player for PyQt6.
+A MIDI player for PySide6.
 """
 
 

@@ -141,7 +141,7 @@ def preferred():
 
     """
 
-    from PyQt6.QtCore import QSettings
+    from PySide6.QtCore import QSettings
     import i18n.setup
 
     s = QSettings()
