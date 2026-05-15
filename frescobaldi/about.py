@@ -20,7 +20,9 @@
 """
 About dialog.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QSettings, QSize, Qt, QUrl
 from PySide6.QtWidgets import (
@@ -35,6 +37,9 @@ import helpers
 import debuginfo
 import userguide.page
 
+if TYPE_CHECKING:
+    pass
+
 
 class AboutDialog(QDialog):
     """A simple 'About Frescobaldi' dialog.
@@ -43,10 +48,10 @@ class AboutDialog(QDialog):
 
     """
     def __init__(self, mainwindow):
-        """Creates the about dialog. You can simply exec() it."""
+        """Creates the About dialog. You can simply exec() it."""
         super().__init__(mainwindow)
 
-        self.setWindowTitle(_("About {appname}").format(appname = appinfo.appname))
+        self.setWindowTitle(_("About {appname}").format(appname=appinfo.appname))
         layout = QVBoxLayout()
         self.setLayout(layout)
 
