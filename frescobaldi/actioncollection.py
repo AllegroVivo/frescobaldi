@@ -44,16 +44,13 @@ currently set shortcuts for an action using shortcuts().
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING, Callable, Optional, Dict, List
+from typing import Callable, Optional, Dict, List, Self
 
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QWidget
 
 import app
-
-if TYPE_CHECKING:
-    pass
 
 
 class ActionCollectionBase:
@@ -63,6 +60,8 @@ class ActionCollectionBase:
     in the 'name' class attribute.
 
     """
+    name: str
+
     def __init__(self, widget: Optional[QWidget] = None):
         self._widget: Callable[[], Optional[QWidget]] = weakref.ref(widget) if widget else lambda: None
         self._actions: Dict[str, QAction] = {}  # maps name to action
@@ -167,7 +166,7 @@ class ActionCollection(ActionCollectionBase):
             if action.shortcuts():
                 self.setDefaultShortcuts(name, action.shortcuts())
 
-    def setShortcuts(self, name, shortcuts):
+    def setShortcuts(self, name: str, shortcuts: List[QKeySequence]) -> None:
         """Sets the shortcuts list for our action. Use an empty list to remove the shortcuts."""
         action = self.actions().get(name)
         if not action:
@@ -188,7 +187,7 @@ class ActionCollection(ActionCollectionBase):
             else:
                 setting.remove(name)
 
-    def load(self, restoreDefaults=True):
+    def load(self, restoreDefaults: bool = True) -> None:
         """Reads keyboard shortcuts from the settings.
 
         If restoreDefaults == True, resets the other shortcuts to their default
@@ -204,7 +203,7 @@ class ActionCollection(ActionCollectionBase):
                 # PyQt6 raises TypeError when an empty list was stored
                 shortcuts = []
             try:
-                self._actions[name].setShortcuts(shortcuts)
+                self._actions[name].setShortcuts(shortcuts)  # type: ignore - SP
             except KeyError:
                 settings.remove(name)
         if restoreDefaults:
@@ -233,12 +232,12 @@ class ShortcutCollection(ActionCollectionBase):
 
     """
     # save weak references to other instances with the same name and sync then.
-    others = {}
+    others: Dict[str, List[Callable[[], Self]]] = {}
 
     # shortcut context to use by default
-    shortcutContext = Qt.ShortcutContext.WindowShortcut
+    shortcutContext: Qt.ShortcutContext = Qt.ShortcutContext.WindowShortcut
 
-    def __init__(self, widget):
+    def __init__(self, widget: Optional[QWidget]):
         """Creates the ShortcutCollection.
 
         The widget is required as actions are added to it, so their keyboard
@@ -250,11 +249,11 @@ class ShortcutCollection(ActionCollectionBase):
         self.load()
         self.others.setdefault(self.name, []).append(weakref.ref(self))
 
-    def createDefaultShortcuts(self):
+    def createDefaultShortcuts(self) -> None:
         """Should set some default shortcut lists using setDefaultShortcuts()."""
         pass
 
-    def load(self):
+    def load(self) -> None:
         """Reads keyboard shortcuts from the settings.  Instantiates QActions as needed."""
         # clears all actions
         for a in self._actions.values():
@@ -280,9 +279,9 @@ class ShortcutCollection(ActionCollectionBase):
                     # if it did not exist, remove key from config
                     settings.remove(name)
             else:
-                self.action(name).setShortcuts(shortcuts)
+                self.action(name).setShortcuts(shortcuts)  # type: ignore - SP
 
-    def setShortcuts(self, name, shortcuts):
+    def setShortcuts(self, name: str, shortcuts: List[QKeySequence]) -> None:
         """Sets the shortcuts list for our action. Use an empty list to remove the shortcuts."""
         if shortcuts:
             self.action(name).setShortcuts(shortcuts)
@@ -296,7 +295,7 @@ class ShortcutCollection(ActionCollectionBase):
                 self.settingsGroup().remove(name)
         self.reloadOthers()
 
-    def restoreDefaultShortcuts(self, name):
+    def restoreDefaultShortcuts(self, name: str) -> None:
         """Resets the shortcuts for the specified action to their default value."""
         shortcuts = self.defaultShortcuts(name)
         if shortcuts:
@@ -306,8 +305,8 @@ class ShortcutCollection(ActionCollectionBase):
         self.settingsGroup().remove(name)
         self.reloadOthers()
 
-    def removeAction(self, name):
-        """(Internal) Removes the named action, returning True it it did exist."""
+    def removeAction(self, name: str) -> bool:
+        """(Internal) Removes the named action, returning True if it did exist."""
         try:
             a = self._actions[name]
         except KeyError:
@@ -316,7 +315,7 @@ class ShortcutCollection(ActionCollectionBase):
         del self._actions[name]
         return True
 
-    def action(self, name):
+    def action(self, name: str) -> QAction:
         """Returns a QAction for the name, instantiating it if necessary."""
         try:
             a = self._actions[name]
@@ -327,13 +326,13 @@ class ShortcutCollection(ActionCollectionBase):
             self.widget().addAction(a)
         return a
 
-    def triggerAction(self, name):
+    def triggerAction(self, name: str) -> None:
         """Called when the user presses a saved keyboard shortcut."""
         a = self.realAction(name)
         if a:
             a.trigger()
 
-    def realAction(self, name):
+    def realAction(self, name: str) -> Optional[QAction]:
         """Implement this to return the real action the name refers to,
 
         This is called when the text and icon are needed (e.g. when the shortcut
@@ -345,7 +344,7 @@ class ShortcutCollection(ActionCollectionBase):
         """
         pass
 
-    def actions(self):
+    def actions(self) -> Dict[str, Optional[QAction]]:
         """Returns our real actions instead of the shadow ones."""
         d = {}
         changed = False
@@ -360,7 +359,7 @@ class ShortcutCollection(ActionCollectionBase):
             self.reloadOthers()
         return d
 
-    def reloadOthers(self):
+    def reloadOthers(self) -> None:
         """Reload others managing the same shortcuts (e.g. in case of multiple mainwindows)."""
         for ref in self.others[self.name][:]:
             other = ref()

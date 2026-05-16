@@ -24,9 +24,11 @@ application.)
 This makes it possible to edit actions and check whether keyboard shortcuts of
 actions conflict with other actions.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional, List, Iterator
 
-import weakref
+from weakref import WeakValueDictionary
 
 from PySide6.QtGui import QKeySequence
 
@@ -34,12 +36,16 @@ import actioncollection
 import plugin
 import qutil
 
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+    from .actioncollection import ActionCollectionBase
 
-def manager(mainwindow):
+
+def manager(mainwindow: MainWindow) -> ActionCollectionManager:
     """Returns the ActionCollectionManager belonging to mainwindow."""
     return ActionCollectionManager.instance(mainwindow)
 
-def action(collection_name, action_name):
+def action(collection_name: str, action_name: str) -> Optional[QKeySequence]:
     """Return a QAction from the application.
 
     May return None, if the named collection or action does not exist.
@@ -51,11 +57,11 @@ def action(collection_name, action_name):
 
 class ActionCollectionManager(plugin.MainWindowPlugin):
     """Manages ActionCollections for a MainWindow."""
-    def __init__(self, mainwindow):
+    def __init__(self, _: MainWindow):
         """Creates the ActionCollectionManager for the given mainwindow."""
-        self._actioncollections = weakref.WeakValueDictionary()
+        self._actioncollections: WeakValueDictionary[str, ActionCollectionBase] = WeakValueDictionary()
 
-    def addActionCollection(self, collection):
+    def addActionCollection(self, collection: ActionCollectionBase) -> None:
         """Add an actioncollection to our list (used for changing keyboard shortcuts).
 
         Does not keep a reference to it.  If the ActionCollection gets garbage collected,
@@ -65,12 +71,12 @@ class ActionCollectionManager(plugin.MainWindowPlugin):
         if collection.name not in self._actioncollections:
             self._actioncollections[collection.name] = collection
 
-    def removeActionCollection(self, collection):
+    def removeActionCollection(self, collection: ActionCollectionBase) -> None:
         """Removes the given ActionCollection from our list."""
         if collection.name in self._actioncollections:
             del self._actioncollections[collection.name]
 
-    def actionCollections(self):
+    def actionCollections(self) -> Iterator[ActionCollectionBase]:
         """Iterate over the ActionCollections in our list."""
         return self._actioncollections.values()
 
