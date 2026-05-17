@@ -20,8 +20,10 @@
 """
 The global things in Frescobaldi.
 """
+from __future__ import annotations
 
-
+from types import TracebackType
+from typing import TYPE_CHECKING, List, Optional, Callable, Any, Type
 
 import os
 import sys
@@ -29,48 +31,60 @@ import platform
 import importlib.util
 import weakref
 
-from PySide6.QtCore import QObject, QSettings, Qt, QThread, QStandardPaths
+from PySide6.QtCore import QObject, QSettings, Qt, QThread, QStandardPaths, QUrl
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QMenuBar
 
 ### needed for QWebEngine
 ### it wants those two things be done before constructing QApplication()
 if importlib.util.find_spec('PySide6.QtWebEngineWidgets'):
+    # noinspection PyUnusedImports
     import PySide6.QtWebEngineWidgets
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts, True)
 ### end needed for QWebEngine
 
 import appinfo
 
-qApp = None                     # instantiate() puts the QApplication obj. here
-windows = []
-documents = []
+if TYPE_CHECKING:
+    from .document import EditorDocument
+    from .mainwindow import MainWindow
+    from .typeinfo import Encoding, Translatable, FileExtension, Font
+    from .extensions import Extensions
+    from .job.queue import GlobalJobQueue
+
+OnInitFunc = Callable[[], None]
+
+
+qApp: QApplication = None  # type: ignore - instantiate() puts the QApplication obj. here
+windows: List[MainWindow] = []
+documents: List[EditorDocument] = []
 
 from signals import Signal, SignalContext
 
 # signals
-appInstantiated  = Signal()     # Called when the QApplication is instantiated
-appStarted = Signal()           # Called when the main event loop is entered
-aboutToQuit = Signal()          # Use this and not qApp.aboutToQuit
-mainwindowCreated = Signal()    # MainWindow
-mainwindowClosed = Signal()     # MainWindow
-documentCreated = Signal()      # Document
-documentUrlChanged = Signal()   # Document
-documentLoaded = Signal()       # Document
-documentModificationChanged = Signal() # Document
-documentClosed = Signal()       # Document
-documentSaved = Signal()        # Document
-documentSaving = SignalContext() # Document
-viewCreated = Signal()          # View
-viewSpaceCreated = Signal()     # ViewSpace (see viewmanager.py)
-languageChanged = Signal()      # (no arguments)
-settingsChanged = Signal()      # (no arguments)
-sessionChanged = Signal()       # (name)
-saveSessionData = Signal()      # (name)
-jobStarted = Signal()           # (Document, Job)
-jobFinished = Signal()          # (Document, Job, bool success)
+appInstantiated:            Signal = Signal()   # Called when the QApplication is instantiated
+appStarted:                 Signal = Signal()   # Called when the main event loop is entered
+aboutToQuit:                Signal = Signal()   # Use this and not qApp.aboutToQuit
+mainwindowCreated:          Signal = Signal()   # (MainWindow)
+mainwindowClosed:           Signal = Signal()   # (MainWindow)
+documentCreated:            Signal = Signal()   # (Document)
+documentUrlChanged:         Signal = Signal()   # (Document)
+documentLoaded:             Signal = Signal()   # (Document)
+documentModificationChanged: Signal = Signal()  # (Document)
+documentClosed:             Signal = Signal()   # (Document)
+documentSaved:              Signal = Signal()   # (Document)
+documentSaving:             SignalContext = SignalContext()  # (Document)
+viewCreated:                Signal = Signal()   # (View)
+viewSpaceCreated:           Signal = Signal()   # (ViewSpace) (see viewmanager.py)
+languageChanged:            Signal = Signal()   # (no arguments)
+settingsChanged:            Signal = Signal()   # (no arguments)
+sessionChanged:             Signal = Signal()   # (str name)
+saveSessionData:            Signal = Signal()   # (str name)
+jobStarted:                 Signal = Signal()   # (Document, Job)
+jobFinished:                Signal = Signal()   # (Document, Job, bool success)
 
 
-def activeWindow():
+def activeWindow() -> Optional[MainWindow]:
     """Return the currently active MainWindow.
 
     Only returns None if there are no windows at all.
@@ -79,10 +93,10 @@ def activeWindow():
     if windows:
         w = QApplication.activeWindow()
         if w in windows:
-            return w
+            return w  # type: ignore - we know that w is a MainWindow  - SP
         return windows[0]
 
-def openUrl(url, encoding=None):
+def openUrl(url: QUrl, encoding: Optional[Encoding] = None) -> EditorDocument:
     """Returns a Document instance for the given QUrl.
 
     If there is already a document with that url, it is returned.
@@ -92,11 +106,13 @@ def openUrl(url, encoding=None):
     if not d:
         # special case if there is only one document:
         # if that is empty and unedited, use it.
-        if (len(documents) == 1
+        if (
+            len(documents) == 1
             and documents[0].url().isEmpty()
             and documents[0].isEmpty()
             and not documents[0].isUndoAvailable()
-            and not documents[0].isRedoAvailable()):
+            and not documents[0].isRedoAvailable()
+        ):
             d = documents[0]
             d.setEncoding(encoding)
             if not url.isEmpty():
@@ -106,7 +122,7 @@ def openUrl(url, encoding=None):
             d = document.EditorDocument.new_from_url(url, encoding)
     return d
 
-def findDocument(url):
+def findDocument(url: QUrl) -> Optional[EditorDocument]:
     """Returns a Document instance for the given QUrl if already loaded.
 
     Returns None if no document with given url exists or if the url is empty.
@@ -117,7 +133,7 @@ def findDocument(url):
             if url == d.url():
                 return d
 
-def instantiate():
+def instantiate() -> None:
     """Instantiate the global QApplication object."""
     global qApp
     args = list(map(os.fsencode, [os.path.abspath(sys.argv[0])] + sys.argv[1:]))
@@ -136,7 +152,7 @@ def instantiate():
         qApp._menubar = QMenuBar()
     appInstantiated()
 
-def oninit(func):
+def oninit(func: OnInitFunc) -> OnInitFunc:
     """Call specified function on QApplication instantiation.
 
     If the QApplication already has been instantiated, the function is called
@@ -152,25 +168,25 @@ def oninit(func):
         appInstantiated.connect(func)
     return func
 
-def run():
+def run() -> int:
     """Enter the Qt event loop."""
     result = qApp.exec()
     aboutToQuit()
     return result
 
-def restart():
+def restart() -> None:
     """Restarts Frescobaldi."""
     args = [os.path.abspath(sys.argv[0])] + sys.argv[1:]
     python_executable = sys.executable
     if python_executable:
         args = [python_executable] + args
-    #NOTE: This deliberately uses subprocess and not job.Job
+    # NOTE: This deliberately uses subprocess and not job.Job
     # It has turned out that using Job the code files are not
     # reloaded at all.
     import subprocess
     subprocess.Popen(args)
 
-def _make_retranslate_callback(obj):
+def _make_retranslate_callback(obj: Translatable) -> Callable[[], None]:
     ref = weakref.ref(obj)
     def retranslate():
         found_obj = ref()
@@ -182,7 +198,7 @@ def _make_retranslate_callback(obj):
         found_obj.translateUI()
     return retranslate
 
-def translateUI(obj, priority=0):
+def translateUI(obj: Translatable, priority: int = 0) -> None:
     """Translates texts in the object.
 
     Texts are translated again if the language is changed.
@@ -207,11 +223,11 @@ def translateUI(obj, priority=0):
     if isinstance(obj, QObject):
         obj.destroyed.connect(lambda: languageChanged.disconnect(retranslator))
 
-def caption(title):
+def caption(title: str) -> str:
     """Returns a nice dialog or window title with appname appended."""
     return f"{title} \u2013 {appinfo.appname}"
 
-def filetypes(extension=None):
+def filetypes(extension: Optional[FileExtension] = None) -> str:
     """Returns a list of supported filetypes.
 
     If a type matches extension, it is placed first.
@@ -219,21 +235,23 @@ def filetypes(extension=None):
     """
     have, havenot = [], []
     for patterns, name in (
-            ("{0} (*.ly *.lyi *.ily)",          _("LilyPond Files")),
-            ("{0} (*.tex *.lytex *.latex)",     _("LaTeX Files")),
-            ("{0} (*.docbook *.lyxml)",         _("DocBook Files")),
-            ("{0} (*.html *.xml)",              _("HTML Files")),
-            ("{0} (*.itely *.tely *.texi *.texinfo)", _("Texinfo Files")),
-            ("{0} (*.scm)",                     _("Scheme Files")),
-            ("{0} (*)",                         _("All Files")),
+            ("{0} (*.ly *.lyi *.ily)",                  "LilyPond Files"),
+            ("{0} (*.tex *.lytex *.latex)",             "LaTeX Files"),
+            ("{0} (*.docbook *.lyxml)",                 "DocBook Files"),
+            ("{0} (*.html *.xml)",                      "HTML Files"),
+            ("{0} (*.itely *.tely *.texi *.texinfo)",   "Texinfo Files"),
+            ("{0} (*.scm)",                             "Scheme Files"),
+            ("{0} (*)",                                 "All Files"),
             ):
         if extension and extension in patterns:
+            print(f"filetypes: {extension} in {patterns}")
             have.append(patterns.format(name))
         else:
+            print(f"filetypes: {extension} not in {patterns}")
             havenot.append(patterns.format(name))
     return ";;".join(have + havenot)
 
-def basedir():
+def basedir() -> str:
     """Returns a base directory for documents.
 
     First looks in the session settings, then the default settings.
@@ -244,18 +262,23 @@ def basedir():
     conf = sessions.currentSessionGroup()
     if not conf:
         conf = QSettings()
-    basedir = conf.value("basedir", "", str)
+    basedir: str = conf.value("basedir", "", str)  # type: ignore - SP
     return basedir if basedir else QStandardPaths.writableLocation(
-        QStandardPaths.StandardLocation.DocumentsLocation)
+        QStandardPaths.StandardLocation.DocumentsLocation
+    )
 
-def settings(name):
+def settings(name: str) -> QSettings:
     """Returns a QSettings object referring a file in ~/.config/frescobaldi/"""
     s = QSettings()
     s.beginGroup(name)
     s.setFallbacksEnabled(False)
     return s
 
-def excepthook(exctype, excvalue, exctb):
+def excepthook(
+    exctype: Type[BaseException],
+    excvalue: BaseException,
+    exctb: TracebackType
+):
     """Called when a Python exception goes unhandled."""
     from traceback import format_exception
     sys.stderr.write(''.join(format_exception(exctype, excvalue, exctb)))
@@ -265,50 +288,50 @@ def excepthook(exctype, excvalue, exctb):
             import exception
             exception.ExceptionDialog(exctype, excvalue, exctb)
 
-def displayhook(obj):
+def displayhook(obj: Optional[Any]) -> None:
     """Prevent normal displayhook from overwriting __builtin__._"""
     if obj is not None:
         print(repr(obj))
 
 
-_extensions = None
+_extensions: Extensions = None  # type: ignore - called during MainWindow instantiation - SP
 
-def load_extensions(mainwindow):
+def load_extensions(mainwindow: MainWindow) -> None:
     """Called from MainWindow.__init__()"""
     import extensions
     global _extensions
     _extensions = extensions.Extensions(mainwindow)
 
-def extensions():
+def extensions() -> Extensions:
     """Return the global Extensions object."""
     global _extensions
     return _extensions
 
 
-_job_queue = None
+_job_queue: GlobalJobQueue = None  # type: ignore - lazy loaded - SP
 
 def job_queue():
     """Return the global JobQueue object."""
     global _job_queue
     if _job_queue is None:
         import job.queue
-        #TODO: save the number of runners in the Preferences
-        #NOTE: Provide code for *changing* the number of runners
+        # TODO: save the number of runners in the Preferences
+        # NOTE: Provide code for *changing* the number of runners
         _job_queue = job.queue.GlobalJobQueue()
     return _job_queue
 
-_is_git_controlled = None
+_is_git_controlled: bool = None  # type: ignore - lazy loaded - SP
 
-def is_git_controlled():
+def is_git_controlled() -> bool:
     global _is_git_controlled
     if _is_git_controlled is None:
         import vcs
         _is_git_controlled = vcs.app_is_git_controlled()
     return _is_git_controlled
 
-_editor_font = None
+_editor_font: QFont = None  # type: ignore - lazy loaded - SP
 
-def editor_font(requested_family=None):
+def editor_font(requested_family: Optional[Font] = None) -> QFont:
     """Returns a font suitable for editing text as a QFont object.
 
     If a specific font family is requested and available, it will be used.
@@ -317,11 +340,13 @@ def editor_font(requested_family=None):
 
     """
     global _editor_font
+    available_families = []
     if requested_family or _editor_font is None:
         from PySide6.QtGui import QFontDatabase
         available_families = QFontDatabase.families()
     if _editor_font is None:
         # This is always a safe choice but not necessarily the best available
+        # noinspection PyUnboundLocalVariable
         _editor_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
         # Our preferred font is generally the default of the platform's native
         # text editor (Notepad, TextEdit, etc.). If this has changed over time

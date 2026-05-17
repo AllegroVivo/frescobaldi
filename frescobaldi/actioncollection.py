@@ -84,7 +84,7 @@ class ActionCollectionBase:
         """
         return self._defaults.get(name)
 
-    def actions(self) -> Dict[str, Optional[QAction]]:
+    def actions(self) -> Dict[str, QAction]:
         """Returns the dictionary with actions."""
         return self._actions
 

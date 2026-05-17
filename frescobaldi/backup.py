@@ -20,7 +20,7 @@
 """
 Backup files before overwriting
 """
-
+from __future__ import annotations
 
 import os
 import shutil
@@ -28,7 +28,7 @@ import shutil
 from PySide6.QtCore import QSettings
 
 
-def backup(filename):
+def backup(filename: str) -> bool:
     """Makes a backup of 'filename'.
 
     Returns True if the backup succeeded.
@@ -43,7 +43,7 @@ def backup(filename):
     return False
 
 
-def removeBackup(filename):
+def removeBackup(filename: str) -> None:
     """Removes filename's backup unless the user has configured to keep it."""
     if filename and not QSettings().value("backup_keep", False, bool):
         try:
@@ -52,19 +52,17 @@ def removeBackup(filename):
             pass
 
 
-def scheme():
+def scheme() -> str:
     """Returns a string that must contain "FILE".
 
     Replacing that part yields the backup name.
 
     """
-    s = QSettings().value("backup_scheme", "FILE~")
+    s: str = QSettings().value("backup_scheme", "FILE~")  # type: ignore
     assert 'FILE' in s and s != 'FILE'
     return s
 
 
-def backupName(filename):
+def backupName(filename: str) -> str:
     """Returns the backup file name for the given filename."""
     return scheme().replace("FILE", filename)
-
-

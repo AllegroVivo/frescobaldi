@@ -24,10 +24,12 @@ Remembers the current position and view when jumping to another location.
 Provides buttons to go back or forward.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, List, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtGui import QAction, QKeySequence, QTextCursor
 
 import app
 import actioncollection
@@ -35,29 +37,34 @@ import actioncollectionmanager
 import plugin
 import icons
 
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+
 
 class Position:
-    cursor = None
-    find_open_view = None
+    cursor: Optional[QTextCursor] = None
+    find_open_view: Optional[bool] = None
 
 
-def get(mainwindow):
+def get(mainwindow: MainWindow) -> BrowserIface:
     """Returns the BrowserIface instance for the specified MainWindow."""
     return BrowserIface.instance(mainwindow)
 
 
 class BrowserIface(plugin.MainWindowPlugin):
-    def __init__(self, mainwindow):
-        ac = self.actionCollection = Actions()
+    # noinspection PyMissingConstructor
+    def __init__(self, mainwindow: MainWindow):
+        self.actionCollection: Actions = Actions()
+        ac = self.actionCollection
         actioncollectionmanager.manager(mainwindow).addActionCollection(ac)
         ac.go_back.triggered.connect(self.goBack)
         ac.go_forward.triggered.connect(self.goForward)
         app.documentClosed.connect(self._documentClosed)
-        self._history = [Position()]
-        self._index = 0    # the index points to the current position
+        self._history: List[Position] = [Position()]
+        self._index: int = 0    # the index points to the current position
         self.updateActions()
 
-    def goBack(self):
+    def goBack(self) -> None:
         """Called when the user activates the go_back action."""
         if self._index > 0:
             self._history[self._index].cursor = self.mainwindow().textCursor()
@@ -66,7 +73,7 @@ class BrowserIface(plugin.MainWindowPlugin):
             self.mainwindow().setTextCursor(p.cursor, p.find_open_view)
             self.updateActions()
 
-    def goForward(self):
+    def goForward(self) -> None:
         """Called when the user activates the go_forward action."""
         if self._index < len(self._history) - 1:
             self._history[self._index].cursor = self.mainwindow().textCursor()
@@ -75,7 +82,7 @@ class BrowserIface(plugin.MainWindowPlugin):
             self.mainwindow().setTextCursor(p.cursor, p.find_open_view)
             self.updateActions()
 
-    def setTextCursor(self, cursor, findOpenView=None):
+    def setTextCursor(self, cursor: QTextCursor, findOpenView=None):
         """Move to the new cursor position and remember the current one."""
         self._remember(findOpenView)
         self.mainwindow().setTextCursor(cursor, findOpenView)

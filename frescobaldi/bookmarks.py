@@ -23,51 +23,60 @@ Manages marked lines (bookmarks) for a Document.
 A mark is simply a QTextCursor that maintains its position in the document.
 
 There are different types (categories) of marks, listed in the module-global
-types variable. Currently the available types are 'mark' (a normal mark)
+types variable. Currently, the available types are 'mark' (a normal mark)
 and 'error' (marking a line containing an error).
 
 """
-
+from __future__ import annotations
 
 import bisect
 import json
+from typing import TYPE_CHECKING, Literal, Optional, Dict, List, Union
 
 from PySide6.QtGui import QTextCursor
 
 import metainfo
-import signals
-import plugin
+from plugin import DocumentPlugin
+from signals import Signal
+
+if TYPE_CHECKING:
+    from .document import Document
+
 
 types = (
     'mark',
     'error',
 )
-
+MarkType = Literal["mark", "error"]
+MarkDict = Dict[MarkType, List[QTextCursor]]
 
 metainfo.define('bookmarks', json.dumps(None))
 
 
-def bookmarks(document):
+def bookmarks(document: Document) -> Bookmarks:
     """Returns the Bookmarks instance for the document."""
     return Bookmarks.instance(document)
 
 
-class Bookmarks(plugin.DocumentPlugin):
+class Bookmarks(DocumentPlugin):
     """Manages bookmarks (marked lines) for a Document.
 
     The marks are stored in the metainfo for the Document.
 
     """
-    marksChanged = signals.Signal()
+    marks: MarkDict
 
+    marksChanged: Signal = Signal()
+
+    # noinspection PyMissingConstructor
     def __init__(self, document):
         """Creates the Bookmarks instance."""
         document.loaded.connect(self.load)
         document.saved.connect(self.save)
         document.closed.connect(self.save)
-        self.load() # initializes self._marks
+        self.load()  # initializes self._marks
 
-    def marks(self, type=None):
+    def marks(self, type: Optional[MarkType] = None) -> Union[List[QTextCursor], MarkDict]:
         """Returns marks (QTextCursor instances).
 
         If type is specified (one of the names in the module-global types variable),
@@ -79,7 +88,7 @@ class Bookmarks(plugin.DocumentPlugin):
 
         return self._marks[type] if type else self._marks
 
-    def setMark(self, linenum, type):
+    def setMark(self, linenum: int, type: MarkType) -> None:
         """Marks the given line number with a mark of the given type."""
         nums = [mark.blockNumber() for mark in self._marks[type]]
         if linenum in nums:
@@ -90,7 +99,7 @@ class Bookmarks(plugin.DocumentPlugin):
         self._marks[type].insert(index, mark)
         self.marksChanged()
 
-    def unsetMark(self, linenum, type):
+    def unsetMark(self, linenum: int, type: MarkType) -> None:
         """Removes a mark of the given type on the given line."""
         nums = [mark.blockNumber() for mark in self._marks[type]]
         if linenum in nums:
@@ -103,7 +112,7 @@ class Bookmarks(plugin.DocumentPlugin):
                     break
             self.marksChanged()
 
-    def toggleMark(self, linenum, type):
+    def toggleMark(self, linenum: int, type: MarkType) -> None:
         """Toggles the mark of the given type on the given line."""
         nums = [mark.blockNumber() for mark in self._marks[type]]
         index = bisect.bisect_left(nums, linenum)
@@ -121,7 +130,7 @@ class Bookmarks(plugin.DocumentPlugin):
             self._marks[type].insert(index, mark)
         self.marksChanged()
 
-    def hasMark(self, linenum, type=None):
+    def hasMark(self, linenum: int, type: Optional[MarkType] = None) -> bool:
         """Returns True if the line has a mark (of the given type if specified) else False."""
         for type in types if type is None else (type,):
             for mark in self._marks[type]:
@@ -129,7 +138,7 @@ class Bookmarks(plugin.DocumentPlugin):
                     return True
         return False
 
-    def clear(self, type=None):
+    def clear(self, type: Optional[MarkType] = None) -> None:
         """Removes all marks, or only all marks of the given type. if specified."""
         if type is None:
             for type in types:
@@ -138,7 +147,11 @@ class Bookmarks(plugin.DocumentPlugin):
             self._marks[type] = []
         self.marksChanged()
 
-    def nextMark(self, cursor, type=None):
+    def nextMark(
+        self,
+        cursor: QTextCursor,
+        type: Optional[MarkType] = None
+    ) -> Optional[QTextCursor]:
         """Finds the first mark after the cursor (of the type if specified)."""
         if type is None:
             marks = []
@@ -153,7 +166,11 @@ class Bookmarks(plugin.DocumentPlugin):
         if index < len(nums):
             return QTextCursor(marks[index].block())
 
-    def previousMark(self, cursor, type=None):
+    def previousMark(
+        self,
+        cursor: QTextCursor,
+        type: Optional[MarkType] = None
+    ) -> Optional[QTextCursor]:
         """Finds the first mark before the cursor (of the type if specified)."""
         if type is None:
             marks = []
@@ -168,19 +185,19 @@ class Bookmarks(plugin.DocumentPlugin):
         if index > 0:
             return QTextCursor(marks[index-1].block())
 
-    def load(self):
+    def load(self) -> None:
         """Loads the marks from the metainfo."""
         self._marks = {type: [] for type in types}
         marks = metainfo.info(self.document()).bookmarks
         try:
             d = json.loads(marks) or {}
         except ValueError:
-            return # No JSON object could be decoded
+            return  # No JSON object could be decoded
         for type in types:
             self._marks[type] = [QTextCursor(self.document().findBlockByNumber(num)) for num in d.get(type, [])]
         self.marksChanged()
 
-    def save(self):
+    def save(self) -> None:
         """Saves the marks to the metainfo."""
         d = {}
         for type in types:
@@ -190,5 +207,3 @@ class Bookmarks(plugin.DocumentPlugin):
                 if linenum not in lines:
                     lines.append(linenum)
         metainfo.info(self.document()).bookmarks = json.dumps(d)
-
-

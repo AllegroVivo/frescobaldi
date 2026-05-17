@@ -28,13 +28,14 @@ name = "frescobaldi"
 version = "4.0.7.dev0"
 extension_api = "0.9.0"
 description = "LilyPond Music Editor"
-long_description = \
-    "Frescobaldi is an advanced text editor to edit LilyPond sheet music files. " \
+long_description = (
+    "Frescobaldi is an advanced text editor to edit LilyPond sheet music files. "
     "Features include an integrated PDF preview and a powerful Score Wizard."
+)
 maintainer = "Wilbert Berendsen"
 maintainer_email = "frescobaldi@googlegroups.com"
 domain = "frescobaldi.org"
-url = f"http://www.{domain}/"
+url = f"https://www.{domain}/"
 issues_url = "https://github.com/frescobaldi/frescobaldi/issues/new"
 license = "GPL"
 
@@ -50,5 +51,5 @@ required_qt_version = (6, 6)
 
 # LilyPond doc URLs to be used in lilydoc/manager.py
 # see also lilypondinfo.LilyPondInfo.lilydoc_url()
-lilydoc_stable = "http://lilypond.org/doc/v2.24"
-lilydoc_development = "http://lilypond.org/doc/v2.25"
+lilydoc_stable = "https://lilypond.org/doc/v2.24"
+lilydoc_development = "https://lilypond.org/doc/v2.25"

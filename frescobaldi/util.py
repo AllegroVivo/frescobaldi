@@ -20,25 +20,29 @@
 """
 Some utility functions.
 """
-
+from __future__ import annotations
 
 import codecs
 import glob
-import itertools
 import io
+import itertools
 import os
-import pathlib
 import platform
 import re
-import unicodedata
+from pathlib import Path
+from typing import TYPE_CHECKING, Optional, List, Iterable, Tuple, Union
 
+import unicodedata
 from PySide6.QtCore import QDir, QUrl
 
 import appinfo
 import variables
 
+if TYPE_CHECKING:
+    from .typeinfo import Encoding
 
-def findexe(cmd, path=None):
+
+def findexe(cmd: str, path: Optional[List[str]] = None) -> Optional[str]:
     """Checks the PATH for the executable and returns the absolute path or None.
 
     If path (a list or tuple of directory names) is given, it is searched as
@@ -50,7 +54,7 @@ def findexe(cmd, path=None):
     else:
         ucmd = os.path.expanduser(cmd)
         if os.path.isabs(ucmd):
-            return ucmd if os.access(ucmd, os.X_OK) else None
+            return ucmd if os.access(ucmd, os.X_OK) else None  # type: ignore
         elif os.sep in cmd and os.access(cmd, os.X_OK):
             return os.path.abspath(cmd)
         else:
@@ -63,25 +67,25 @@ def findexe(cmd, path=None):
 
 
 if platform.system() == "Windows":
-    def equal_paths(p1, p2):
+    def equal_paths(p1: str, p2: str) -> bool:
         """Returns True if the paths are equal (case and separator insensitive)."""
         return p1.lower().replace('\\', '/') == p2.lower().replace('\\', '/')
 else:
-    def equal_paths(p1, p2):
+    def equal_paths(p1: str, p2: str) -> bool:
         """Returns True if the paths are equal."""
         return p1 == p2
 
 
 # Make sure that also on Windows, directory slashes remain forward
 if platform.system() == "Windows":
-    def normpath(path):
+    def normpath(path: str) -> str:
         """A version of os.path.normpath that keeps slashes forward."""
         return os.path.normpath(path).replace('\\', '/')
 else:
     normpath = os.path.normpath
 
 
-def homify(path):
+def homify(path: str) -> str:
     """Replaces the home directory (if present) in the path with a tilde (~)."""
     homedir = QDir.homePath()
     if equal_paths(path[:len(homedir)+1], homedir + '/'):
@@ -89,7 +93,7 @@ def homify(path):
     return path
 
 
-def path(url):
+def path(url: QUrl) -> Optional[str]:
     """Returns the path, as a string, of the url to group documents.
 
     Returns None if the document is nameless.
@@ -100,17 +104,19 @@ def path(url):
     elif url.toLocalFile():
         return homify(os.path.dirname(url.toLocalFile()))
     else:
-        return url.resolved(QUrl('.')).toString(QUrl.RemoveUserInfo)
+        # TODO: QUrl.toString doesn't appear to have an overload for UrlFormattingOption
+        #  but still works? - SP
+        return url.resolved(QUrl('.')).toString(QUrl.UrlFormattingOption.RemoveUserInfo)
 
 
-def tempdir():
+def tempdir() -> str:
     """Returns a temporary directory that is erased on app quit."""
     import tempfile
     global _tempdir
     try:
         _tempdir
     except NameError:
-        _tempdir = tempfile.mkdtemp(prefix = appinfo.name +'-')
+        _tempdir = tempfile.mkdtemp(prefix = appinfo.name + '-')
         import atexit
         @atexit.register
         def remove():
@@ -119,7 +125,7 @@ def tempdir():
     return tempfile.mkdtemp(dir=_tempdir)
 
 
-def files(basenames, extension = '.*'):
+def files(basenames: Iterable[str], extension: str = '.*') -> List[str]:
     """Yields filenames with the given basenames matching the given extension."""
     def source():
         for name in basenames:
@@ -138,12 +144,13 @@ def files(basenames, extension = '.*'):
     return sorted(uniq(itertools.chain.from_iterable(source())), key=filenamesort)
 
 
-def newer_files(files, time):
+def newer_files(files: str, time: float) -> List[str]:
     """Return a list of files that have their mtime >= time."""
     return [f for f in files if os.path.getmtime(f) >= time]
 
 
-def group_files(names, groups):
+# noinspection PyDefaultArgument
+def group_files(names: Iterable[str], groups: Iterable[str]) -> Iterable[List[str]]:
     """Groups the given filenames by extension.
 
     names: an iterable (or list or tuple) yielding filenames.
@@ -173,7 +180,7 @@ def group_files(names, groups):
     return (files for files, pred in allgroups)
 
 
-def naturalsort(text):
+def naturalsort(text: str) -> Tuple[Union[int, str], ...]:
     """Returns a key for the list.sort() method.
 
     Intended to sort strings in a human way, for e.g. version numbers.
@@ -182,13 +189,13 @@ def naturalsort(text):
     return tuple(int(s) if s.isdigit() else s for s in re.split(r'(\d+)', text))
 
 
-def filenamesort(filename):
+def filenamesort(filename: str) -> Tuple[Tuple[Union[int, str], ...], str]:
     """Return a key for sorting filenames."""
     name, ext = os.path.splitext(filename)
     return naturalsort(name), ext
 
 
-def next_file(filename):
+def next_file(filename: str) -> str:
     """Return a similar filename with e.g. "-1" added before the extension.
 
     If there is already a "-n" before the extension, where n is a number,
@@ -206,7 +213,7 @@ def next_file(filename):
     return name + ext
 
 
-def uniq(iterable):
+def uniq[T](iterable: Iterable[T]) -> Iterable[T]:
     """Returns an iterable, removing duplicates. The items should be hashable."""
     s, l = set(), 0
     for i in iterable:
@@ -216,7 +223,7 @@ def uniq(iterable):
             l = len(s)
 
 
-def get_bom(data):
+def get_bom(data: bytes) -> Tuple[Optional[str], bytes]:
     """Get the BOM mark of data, if any.
 
     A two-tuple is returned (encoding, data). If the data starts with a BOM
@@ -231,19 +238,19 @@ def get_bom(data):
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
         (codecs.BOM_UTF32_LE, 'utf_32_le'),
         (codecs.BOM_UTF32_BE, 'utf_32_be'),
-            ):
+    ):
         if data.startswith(bom):
             return encoding, data[len(bom):]
     return None, data
 
 
-def decode(data, encoding=None):
+def decode(data: bytes, encoding: Optional[Encoding] = None) -> str:
     """Decode binary data, using encoding if specified.
 
     When the encoding can't be determined and isn't specified, it is tried to
     get the encoding from the document variables (see variables module).
 
-    Otherwise utf-8 and finally latin1 are tried.
+    Otherwise, utf-8 and finally latin1 are tried.
 
     """
     enc, data = get_bom(data)
@@ -264,7 +271,11 @@ def decode(data, encoding=None):
     return latin1
 
 
-def encode(text, encoding=None, default_encoding='utf-8'):
+def encode(
+    text: str,
+    encoding: Optional[Encoding] = None,
+    default_encoding: Encoding = 'utf-8'
+):
     """Return the bytes representing the text, encoded.
 
     Looks at the specified encoding or the 'coding' variable to determine
@@ -275,18 +286,18 @@ def encode(text, encoding=None, default_encoding='utf-8'):
     enc = encoding or variables.variables(text).get("coding")
     if enc:
         try:
-            return text.encode(encoding)
+            return text.encode(encoding)  # type: ignore
         except (LookupError, UnicodeError):
             pass
     return text.encode(default_encoding)
 
 
-def universal_newlines(text):
+def universal_newlines(text: str) -> str:
     """Converts '\\r' or '\\r\\n' to '\\n' in text."""
     return io.StringIO(text, newline=None).read()
 
 
-def platform_newlines(text):
+def platform_newlines(text: str) -> str:
     """Convert newlines in text to the platform-specific newline.
 
     On Unix this is '\\n', on Windows '\\r\\n'.
@@ -296,5 +307,5 @@ def platform_newlines(text):
 
 
 # This is the pathlib.Path.is_relative_to() method in Python 3.9+
-def path_is_relative_to(path, other):
+def path_is_relative_to(path: Path, other: Path) -> bool:
     return path == other or other in path.parents

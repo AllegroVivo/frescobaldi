@@ -154,7 +154,7 @@ def getAccelerator(text):
         return m.group(1).lower()
 
 
-def removeAccelerator(text):
+def removeAccelerator(text) -> str:
     """Removes accelerator ampersands from a QAction.text() string."""
     return text.replace('&&', '\0').replace('&', '').replace('\0', '&')
 

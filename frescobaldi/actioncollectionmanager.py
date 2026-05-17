@@ -26,11 +26,10 @@ actions conflict with other actions.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, List, Iterator
-
+from typing import TYPE_CHECKING, Optional, Iterator, Tuple, Sequence
 from weakref import WeakValueDictionary
 
-from PySide6.QtGui import QKeySequence
+from PySide6.QtGui import QKeySequence, QAction
 
 import actioncollection
 import plugin
@@ -57,6 +56,7 @@ def action(collection_name: str, action_name: str) -> Optional[QKeySequence]:
 
 class ActionCollectionManager(plugin.MainWindowPlugin):
     """Manages ActionCollections for a MainWindow."""
+    # noinspection PyMissingConstructor
     def __init__(self, _: MainWindow):
         """Creates the ActionCollectionManager for the given mainwindow."""
         self._actioncollections: WeakValueDictionary[str, ActionCollectionBase] = WeakValueDictionary()
@@ -80,7 +80,7 @@ class ActionCollectionManager(plugin.MainWindowPlugin):
         """Iterate over the ActionCollections in our list."""
         return self._actioncollections.values()
 
-    def action(self, collection_name, action_name):
+    def action(self, collection_name: str, action_name: str):
         """Returns the named action from the named collection."""
         collection = self._actioncollections.get(collection_name)
         if collection:
@@ -88,15 +88,22 @@ class ActionCollectionManager(plugin.MainWindowPlugin):
                 return collection.realAction(action_name)
             return getattr(collection, action_name, None)
 
-    def iterShortcuts(self, skip=None):
+    def iterShortcuts(
+        self,
+        skip: Optional[Tuple[ActionCollectionBase, str]] = None
+    ) -> Iterator[Tuple[QKeySequence, ActionCollectionBase, str, QAction]]:
         """Iter all shortcuts of all collections."""
         for collection in self.actionCollections():
             for name, a in collection.actions().items():
                 if (collection, name) != skip:
-                    for shortcut in collection.shortcuts(name):
+                    for shortcut in collection.shortcuts(name):  # type: ignore - SP
                         yield shortcut, collection, name, a
 
-    def findShortcutConflict(self, shortcut, skip):
+    def findShortcutConflict(
+        self,
+        shortcut: QKeySequence,
+        skip: Tuple[ActionCollectionBase, str]
+    ) -> Optional[str]:
         """Find the possible shortcut conflict and return the conflict name.
 
         skip must be a tuple (collection, name).
@@ -110,7 +117,7 @@ class ActionCollectionManager(plugin.MainWindowPlugin):
                     return qutil.removeAccelerator(data[-1].text())
         return None
 
-    def removeShortcuts(self, shortcuts):
+    def removeShortcuts(self, shortcuts: Sequence[QKeySequence]) -> None:
         """Find and remove shortcuts of the given list."""
         for data in self.iterShortcuts():
             s1, collection, name = data[:3]
@@ -120,5 +127,8 @@ class ActionCollectionManager(plugin.MainWindowPlugin):
                     collShortcuts.remove(s1)
                     collection.setShortcuts(name, collShortcuts)
 
-def isShortcutConflict(s1, s2):
-    return s1.matches(s2) != QKeySequence.SequenceMatch.NoMatch or s2.matches(s1) != QKeySequence.SequenceMatch.NoMatch
+def isShortcutConflict(s1: QKeySequence, s2: QKeySequence) -> bool:
+    return (
+        s1.matches(s2) != QKeySequence.SequenceMatch.NoMatch
+        or s2.matches(s1) != QKeySequence.SequenceMatch.NoMatch
+    )

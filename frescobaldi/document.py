@@ -31,9 +31,10 @@ editor, Document for "abstract" documents, for example to pass a generated
 document to a job.lilypond.LilyPondJob without implicitly creating a tab.
 
 """
-
+from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING, Optional, Self, Tuple
 
 from PySide6.QtCore import QTimer, QUrl
 from PySide6.QtGui import QTextCursor, QTextDocument
@@ -42,7 +43,10 @@ from PySide6.QtWidgets import QPlainTextDocumentLayout
 import app
 import util
 import variables
-import signals
+from signals import Signal, SignalContext
+
+if TYPE_CHECKING:
+    from .typeinfo import Encoding
 
 
 class AbstractDocument(QTextDocument):
@@ -52,9 +56,10 @@ class AbstractDocument(QTextDocument):
     or lilypondinfo etc. for additional meta information.
 
     """
+    _num: int
 
     @classmethod
-    def load_data(cls, url, encoding=None):
+    def load_data(cls, url: QUrl, encoding: Optional[Encoding] = None) -> str:
         """Class method to load document contents from an url.
 
         This is intended to open a document without instantiating one
@@ -77,7 +82,7 @@ class AbstractDocument(QTextDocument):
         return util.universal_newlines(text)
 
     @classmethod
-    def new_from_url(cls, url, encoding=None):
+    def new_from_url(cls, url: QUrl, encoding: Optional[Encoding] = None) -> Self:
         """Create and return a new document, loaded from url.
 
         This is intended to open a new Document without instantiating one
@@ -90,11 +95,12 @@ class AbstractDocument(QTextDocument):
         # If this did not raise, proceed to create a new document.
         d = cls(url, encoding)
         if not url.isEmpty():
+            # noinspection PyUnboundLocalVariable
             d.setPlainText(data)
             d.setModified(False)
         return d
 
-    def __init__(self, url=None, encoding=None):
+    def __init__(self, url: Optional[QUrl] = None, encoding: Optional[Encoding] = None):
         """Create a new Document with url and encoding.
 
         Does not load the contents, you should use load() for that, or
@@ -106,11 +112,16 @@ class AbstractDocument(QTextDocument):
             url = QUrl()
         super().__init__()
         self.setDocumentLayout(QPlainTextDocumentLayout(self))
-        self._encoding = encoding
-        self._url = url # avoid urlChanged on init
+        self._encoding: Optional[Encoding] = encoding
+        self._url: QUrl = url  # avoid urlChanged on init
         self.setUrl(url)
 
-    def load(self, url=None, encoding=None, keepUndo=False):
+    def load(
+        self,
+        url: Optional[QUrl] = None,
+        encoding: Optional[Encoding] = None,
+        keepUndo: bool = False
+    ) -> None:
         """Load the specified or current url (if None was specified).
 
         Currently only local files are supported. An IOError is raised
@@ -136,7 +147,7 @@ class AbstractDocument(QTextDocument):
         if not url.isEmpty():
             self.setUrl(url)
 
-    def _save(self, url, filename):
+    def _save(self, url: QUrl, filename: str) -> None:
         with open(filename, "wb") as f:
             f.write(self.encodedText())
             f.flush()
@@ -145,7 +156,11 @@ class AbstractDocument(QTextDocument):
         if not url.isEmpty():
             self.setUrl(url)
 
-    def save(self, url=None, encoding=None):
+    def save(
+        self,
+        url: Optional[QUrl] = None,
+        encoding: Optional[Encoding] = None
+    ) -> Tuple[QUrl, str]:
         """Saves the document to the specified or current url.
 
         Currently only local files are supported. An IOError is raised
@@ -171,10 +186,10 @@ class AbstractDocument(QTextDocument):
             self.setUrl(url)
         return url, filename
 
-    def url(self):
+    def url(self) -> QUrl:
         return self._url
 
-    def setUrl(self, url):
+    def setUrl(self, url: Optional[QUrl]) -> QUrl:
         """ Change the url for this document. """
         if url is None:
             url = QUrl()
@@ -188,13 +203,13 @@ class AbstractDocument(QTextDocument):
             self._num = 0
         return old
 
-    def encoding(self):
+    def encoding(self) -> Optional[Encoding]:
         return variables.get(self, "coding") or self._encoding
 
-    def setEncoding(self, encoding):
+    def setEncoding(self, encoding: Optional[Encoding]) -> None:
         self._encoding = encoding
 
-    def encodedText(self):
+    def encodedText(self) -> bytes:
         """Return the text of the document as a bytes string encoded in the
         correct encoding.
 
@@ -206,7 +221,7 @@ class AbstractDocument(QTextDocument):
         text = util.platform_newlines(self.toPlainText())
         return util.encode(text, self.encoding())
 
-    def documentName(self):
+    def documentName(self) -> str:
         """Return a suitable name for this document.
 
         This is only to be used for display. If the url of the document is
@@ -226,7 +241,7 @@ class Document(AbstractDocument):
     """A Frescobaldi document to be used anywhere except the main editor
     viewspace (also non-GUI jobs/operations)."""
 
-    def save(self, url=None, encoding=None):
+    def save(self, url: Optional[QUrl] = None, encoding: Optional[Encoding] = None):
         url, filename = super().save(url, encoding)
         self._save(url, filename)
 
@@ -235,68 +250,72 @@ class EditorDocument(AbstractDocument):
     """A Frescobaldi document for use in the main editor view.
     Basically this is an AbstractDocument with signals added."""
 
-    urlChanged = signals.Signal() # new url, old url
-    closed = signals.Signal()
-    loaded = signals.Signal()
-    saving = signals.SignalContext()
-    saved = signals.Signal()
+    urlChanged = Signal()  # (new url, old url)
+    closed = Signal()
+    loaded = Signal()
+    saving = SignalContext()
+    saved = Signal()
     # this is like contentsChanged, but emitted only once for changes
     # occurring within a short time period, to avoid repeatedly triggering
     # slots while the user is typing
-    changesStopped = signals.Signal()
+    changesStopped = Signal()
 
     @classmethod
-    def new_from_url(cls, url, encoding=None):
-        d = super().new_from_url(url, encoding)
+    def new_from_url(cls, url: QUrl, encoding: Optional[Encoding] = None) -> Self:
+        d: EditorDocument = super().new_from_url(url, encoding)  # type: ignore
         if not url.isEmpty():
             d.loaded()
             app.documentLoaded(d)
-        return d
+        return d  # type: ignore
 
-    def __init__(self, url=None, encoding=None):
+    def __init__(self, url: Optional[QUrl] = None, encoding: Optional[Encoding] = None):
         super().__init__(url, encoding)
         self.modificationChanged.connect(self.slotModificationChanged)
         app.documents.append(self)
         app.documentCreated(self)
         # this timer is restarted after each change to the document;
         # the changesStopped signal is emitted once it times out
-        self._changeTimer = QTimer(singleShot=True,
-                                   interval=900, # msec
-                                   timeout=self.changesStopped)
+        self._changeTimer = QTimer(singleShot=True, interval=900)  # (msec)
+        self._changeTimer.timeout.connect(self.changesStopped)
         self.contentsChanged.connect(self._changeTimer.start)
 
-    def slotModificationChanged(self):
+    def slotModificationChanged(self) -> None:
         app.documentModificationChanged(self)
 
-    def close(self):
+    def close(self) -> None:
         self.closed()
         app.documentClosed(self)
         app.documents.remove(self)
 
-    def load(self, url=None, encoding=None, keepUndo=False):
+    def load(
+        self,
+        url: Optional[QUrl] = None,
+        encoding: Optional[Encoding] = None,
+        keepUndo: bool = False
+    ) -> None:
         super().load(url, encoding, keepUndo)
         self.loaded()
         app.documentLoaded(self)
 
-    def save(self, url=None, encoding=None):
+    def save(self, url: Optional[QUrl] = None, encoding: Optional[Encoding] = None) -> None:
         url, filename = super().save(url, encoding)
         with self.saving(), app.documentSaving(self):
             self._save(url, filename)
         self.saved()
         app.documentSaved(self)
 
-    def setUrl(self, url):
+    def setUrl(self, url: Optional[QUrl]) -> None:
         old = super().setUrl(url)
         if url != old:
             self.urlChanged(url, old)
             app.documentUrlChanged(self, url, old)
 
-    def cursorAtPosition(self, line, column=None):
+    def cursorAtPosition(self, line: int, column: Optional[int] = None) -> QTextCursor:
         """Return a new QTextCursor set to the line and column given (each starting at 1).
 
         This method avoids common pitfalls associated with arbitrarily setting the cursor
         position via setCursorPosition.
-        - The cursor will be set at a vaid position in a valid block.
+        - The cursor will be set at a valid position in a valid block.
         - Reasonable defaults are used for under/over-limit input.
         - Character counting based on UTF-8 matches LilyPond and Python conventions.
         - The cursor will not be set in the middle of a surrogate pair or composed glyph.
@@ -323,7 +342,7 @@ class EditorDocument(AbstractDocument):
             cursor.movePosition(QTextCursor.MoveOperation.End)
         return cursor
 
-    def isChanging(self):
+    def isChanging(self) -> bool:
         """Return whether the document is currently changing.
 
         This returns True for a brief period after each contentsChanged
