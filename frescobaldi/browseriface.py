@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QObject
 from PySide6.QtGui import QAction, QKeySequence, QTextCursor
 
 import app
@@ -39,6 +39,7 @@ import icons
 
 if TYPE_CHECKING:
     from .mainwindow import MainWindow
+    from .document import EditorDocument
 
 
 class Position:
@@ -82,12 +83,12 @@ class BrowserIface(plugin.MainWindowPlugin):
             self.mainwindow().setTextCursor(p.cursor, p.find_open_view)
             self.updateActions()
 
-    def setTextCursor(self, cursor: QTextCursor, findOpenView=None):
+    def setTextCursor(self, cursor: QTextCursor, findOpenView=None) -> None:
         """Move to the new cursor position and remember the current one."""
         self._remember(findOpenView)
         self.mainwindow().setTextCursor(cursor, findOpenView)
 
-    def setCurrentDocument(self, doc, findOpenView=None):
+    def setCurrentDocument(self, doc: EditorDocument, findOpenView: Optional[bool] = None) -> None:
         """Switch to a different document and remember the current cursor position."""
         self._remember(findOpenView)
         self.mainwindow().setCurrentDocument(doc, findOpenView)
@@ -97,7 +98,7 @@ class BrowserIface(plugin.MainWindowPlugin):
         self.actionCollection.go_back.setEnabled(self._index > 0)
         self.actionCollection.go_forward.setEnabled(self._index < len(self._history) - 1)
 
-    def _remember(self, findOpenView):
+    def _remember(self, findOpenView: Optional[bool]) -> None:
         """(Internal) Remember the current cursor position and whether a new view was requested."""
         pos = self._history[self._index]
         pos.cursor = self.mainwindow().textCursor()
@@ -107,7 +108,7 @@ class BrowserIface(plugin.MainWindowPlugin):
         self._history.append(Position())
         self.updateActions()
 
-    def _documentClosed(self, doc):
+    def _documentClosed(self, doc: EditorDocument):
         """(Internal) Called when a document is closed.
 
         Removes the positions in the history of that document.
@@ -127,7 +128,8 @@ class BrowserIface(plugin.MainWindowPlugin):
 
 class Actions(actioncollection.ActionCollection):
     name = "browseriface"
-    def createActions(self, parent):
+
+    def createActions(self, parent: Optional[QObject] = None) -> None:
         self.go_back = QAction(parent)
         self.go_forward = QAction(parent)
 
@@ -137,9 +139,8 @@ class Actions(actioncollection.ActionCollection):
         self.go_back.setShortcut(QKeySequence(Qt.Modifier.ALT | Qt.Key.Key_Backspace))
         self.go_forward.setShortcut(QKeySequence(Qt.Modifier.ALT | Qt.Key.Key_End))
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         self.go_back.setText(_("Go to previous position"))
         self.go_back.setIconText(_("Back"))
         self.go_forward.setText(_("Go to next position"))
         self.go_forward.setIconText(_("Forward"))
-

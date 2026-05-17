@@ -20,15 +20,17 @@
 """
 Functions manipulating QTextCursors and their selections.
 """
+from __future__ import annotations
+
+from typing import Iterator, Tuple, Optional
+
+from contextlib import contextmanager
+
+from PySide6.QtGui import QTextBlock, QTextBlockUserData, QTextCursor, QTextDocument
+from PySide6.QtWidgets import QTextEdit
 
 
-import contextlib
-import operator
-
-from PySide6.QtGui import QTextBlock, QTextBlockUserData, QTextCursor
-
-
-def block(cursor):
+def block(cursor: QTextCursor) -> QTextBlock:
     """Returns the cursor's block.
 
     If the cursor has a selection, returns the block the selection starts in
@@ -40,7 +42,7 @@ def block(cursor):
     return cursor.block()
 
 
-def blocks(cursor):
+def blocks(cursor: QTextCursor) -> Iterator[QTextBlock]:
     """Yields the block(s) containing the cursor or selection."""
     d = cursor.document()
     block = d.findBlock(cursor.selectionStart())
@@ -52,13 +54,15 @@ def blocks(cursor):
         block = block.next()
 
 
-def contains(c1, c2):
+def contains(c1: QTextCursor, c2: QTextCursor) -> bool:
     """Returns True if cursor2's selection falls inside cursor1's."""
-    return (c1.selectionStart() <= c2.selectionStart()
-            and c1.selectionEnd() >= c2.selectionEnd())
+    return (
+        c1.selectionStart() <= c2.selectionStart()
+        and c1.selectionEnd() >= c2.selectionEnd()
+    )
 
 
-def forwards(block, until=QTextBlock()):
+def forwards(block: QTextBlock, until: QTextBlock = QTextBlock()) -> Iterator[QTextBlock]:
     """Yields the block and all following blocks.
 
     If until is a valid block, yields the blocks until the specified block.
@@ -74,7 +78,7 @@ def forwards(block, until=QTextBlock()):
             block = block.next()
 
 
-def backwards(block, until=QTextBlock()):
+def backwards(block: QTextBlock, until: QTextBlock = QTextBlock()) -> Iterator[QTextBlock]:
     """Yields the block and all preceding blocks.
 
     If until is a valid block, yields the blocks until the specified block.
@@ -90,12 +94,12 @@ def backwards(block, until=QTextBlock()):
             block = block.previous()
 
 
-def all_blocks(document):
+def all_blocks(document: QTextDocument) -> Iterator[QTextBlock]:
     """Yields all blocks of the document."""
     return forwards(document.firstBlock())
 
 
-def partition(cursor):
+def partition(cursor: QTextCursor) -> Tuple[str, str, str]:
     """Returns a three-tuple of strings (before, selection, after).
 
     'before' is the text before the cursor's position or selection start,
@@ -113,8 +117,8 @@ def partition(cursor):
     return before, selection, after
 
 
-@contextlib.contextmanager
-def compress_undo(cursor, join_previous = False):
+@contextmanager
+def compress_undo(cursor: QTextCursor, join_previous: bool = False) -> Iterator[None]:
     """Returns a context manager to perform operations on cursor as a single undo-item."""
     cursor.joinPreviousEditBlock() if join_previous else cursor.beginEditBlock()
     try:
@@ -123,8 +127,8 @@ def compress_undo(cursor, join_previous = False):
         cursor.endEditBlock()
 
 
-@contextlib.contextmanager
-def keep_selection(cursor, edit=None):
+@contextmanager
+def keep_selection(cursor: QTextCursor, edit: Optional[QTextEdit] = None) -> Iterator[None]:
     """Performs operations inside the selection and restore the selection afterwards.
 
     If edit is given, call setTextCursor(cursor) on the Q(Plain)TextEdit afterwards.
@@ -147,7 +151,7 @@ def keep_selection(cursor, edit=None):
             edit.setTextCursor(cursor)
 
 
-def strip_selection(cursor, chars=None):
+def strip_selection(cursor: QTextCursor, chars: Optional[str] = None) -> None:
     """Adjusts the selection of the cursor just like Python's strip().
 
     If there is no selection or the selection would vanish completely,
@@ -169,14 +173,14 @@ def strip_selection(cursor, chars=None):
     cursor.setPosition(e, QTextCursor.MoveMode.KeepAnchor)
 
 
-def strip_indent(cursor):
+def strip_indent(cursor: QTextCursor) -> None:
     """Moves the cursor in its block to the first non-space character."""
     text = cursor.block().text()
     pos = len(text) - len(text.lstrip())
     cursor.setPosition(cursor.block().position() + pos)
 
 
-def insert_select(cursor, text):
+def insert_select(cursor: QTextCursor, text: str) -> None:
     """Inserts text and then selects all inserted text in the cursor."""
     pos = cursor.selectionStart()
     cursor.insertText(text)
@@ -185,13 +189,13 @@ def insert_select(cursor, text):
     cursor.setPosition(new, QTextCursor.MoveMode.KeepAnchor)
 
 
-def isblank(block):
+def isblank(block: QTextBlock) -> bool:
     """Returns True if the block is an empty or blank line."""
     text = block.text()
     return not text or text.isspace()
 
 
-def isblank_before(cursor):
+def isblank_before(cursor: QTextCursor) -> bool:
     """Returns True if there's no text on the current line before the cursor."""
     if cursor.atBlockStart():
         return True
@@ -199,7 +203,7 @@ def isblank_before(cursor):
     return not text or text.isspace()
 
 
-def isblank_after(cursor):
+def isblank_after(cursor: QTextCursor) -> bool:
     """Returns True if there's no text on the current line after the cursor."""
     if cursor.atBlockEnd():
         return True
@@ -207,7 +211,7 @@ def isblank_after(cursor):
     return not text or text.isspace()
 
 
-def next_blank(block):
+def next_blank(block: QTextBlock) -> Optional[QTextBlock]:
     """Returns the next block that is the first block of one or more blank blocks."""
     bb = forwards(block)
     for b in bb:
@@ -217,7 +221,7 @@ def next_blank(block):
                     return b
 
 
-def previous_blank(block):
+def previous_blank(block: QTextBlock) -> Optional[QTextBlock]:
     """Returns the previous block that is the first block of one or more blank blocks."""
     bb = backwards(block)
     for b in bb:
@@ -231,12 +235,10 @@ def previous_blank(block):
                     return b
 
 
-def data(block):
+def data(block: QTextBlock) -> QTextBlockUserData:
     """Get the block's QTextBlockUserData, creating it if necessary."""
     data = block.userData()
     if not data:
         data = QTextBlockUserData()
         block.setUserData(data)
     return data
-
-

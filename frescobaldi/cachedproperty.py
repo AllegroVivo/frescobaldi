@@ -92,14 +92,20 @@ default implementation sets the property to the returned value.
 This module uses the signals module for the callback logic.
 
 """
+from __future__ import annotations
 
+from typing import (
+    Callable, Any, Optional, Tuple, Type, Union, Self, overload,
+    TypeVar, Literal, Iterable
+)
+from weakref import WeakKeyDictionary
 
-import weakref
+from signals import Signal
 
-import signals
+T = TypeVar("T")
+V = TypeVar("V")
 
-
-class CachedProperty:
+class CachedProperty[T, V]:
     """An advanced property that can compute and cache expensive operations.
 
     This can be used to e.g. run an external command and read its output.
@@ -108,9 +114,16 @@ class CachedProperty:
     the callback() method or the computed() signal.
 
     """
+    _instance: T
+    _property: CachedProperty[T, V]
+
     # descriptor part
     @classmethod
-    def cachedproperty(cls, func=None, depends=None):
+    def cachedproperty(
+        cls,
+        func: Optional[Callable[..., Any]] = None,
+        depends: Optional[Tuple[CachedProperty, ...]] = None
+    ) -> Callable[..., Any]:
         """Decorator to make cached properties."""
         if func is not None:
             return cls(func, depends)
@@ -120,44 +133,66 @@ class CachedProperty:
             return cls(func, depends)
         return decorator
 
-    def __init__(self, func=None, depends=None):
+    def __init__(
+        self,
+        func: Optional[Callable[[T], Optional[V]]] = None,
+        depends: Optional[Iterable[CachedProperty]] = None
+    ):
         """Initialize the property/descriptor."""
-        self._func = func
+        self._func: Optional[Callable[..., Any]] = func
         if depends is None:
             self._depends = ()
         elif not isinstance(depends, (tuple, list)):
             self._depends = (depends,)
         else:
             self._depends = depends
-        self._state = weakref.WeakKeyDictionary()
+        self._state: WeakKeyDictionary[T, CachedProperty.State] = WeakKeyDictionary()
 
-    def __get__(self, instance, cls=None):
+    @overload
+    def __get__(
+        self,
+        instance: None,
+        cls: Optional[Type[T]] = None
+    ) -> Self: ...
+
+    @overload
+    def __get__(
+        self,
+        instance: T,
+        cls: Optional[Type[T]] = None
+    ) -> CachedProperty[T, V]: ...
+
+    def __get__(
+        self,
+        instance: Optional[T],
+        cls: Optional[Type[T]] = None
+    ) -> Union[CachedProperty[T, V], Self]:
         if instance is None:
-            return self._func or self
+            return self._func or self  # type: ignore
         return self.bound(instance)
 
-    def __set__(self, instance, value):
+    def __set__(self, instance: Optional[T], value: Any) -> None:
         self.__get__(instance).set(value)
 
-    def __delete__(self, instance):
+    def __delete__(self, instance: Optional[T]) -> None:
         self.__get__(instance).unset()
 
-    def bound(self, instance):
+    def bound(self, instance: T) -> CachedProperty:
         """Returns a bound instance."""
         cls = type(self)
-        prop = cls.__new__(cls)
+        prop = cls.__new__(cls)  # type: ignore
         prop._instance = instance
         prop._property = self
         return prop
 
     # instance part
     class State:
-        signal = signals.Signal()
+        signal: Signal = Signal()
         def __init__(self):
-            self.value = None
-            self.running = False
+            self.value: Optional[V] = None
+            self.running: bool = False
 
-    def state(self):
+    def state(self) -> State:
         """Returns the state for the instance."""
         instance = self.instance()
         d = self._property._state
@@ -167,16 +202,16 @@ class CachedProperty:
             state = d[instance] = self.State()
         return state
 
-    def instance(self):
+    def instance(self) -> T:
         """The instance we are a property for."""
         return self._instance
 
     @property
-    def computed(self):
+    def computed(self) -> Signal:
         """The signal that is emitted when the value is set."""
         return self.state().signal
 
-    def set(self, value):
+    def set(self, value: Optional[V]) -> None:
         """Sets a value.
 
         If the value is not None, the computed(value) signal is emitted.
@@ -189,15 +224,15 @@ class CachedProperty:
             self.computed.emit(value)
             self.computed.clear()
 
-    def unset(self):
+    def unset(self) -> None:
         """Sets the value to None, the property is considered unset."""
         self.state().value = None
 
-    def get(self):
+    def get(self) -> Optional[V]:
         """Retrieves the value, which may be None (unset)."""
         return self.state().value
 
-    def __call__(self):
+    def __call__(self) -> Optional[V]:
         """Retrieves the value, starting the computation if needed.
 
         If the function immediately returns a value it is returned;
@@ -209,20 +244,20 @@ class CachedProperty:
             self.start()
         return state.value
 
-    def name(self):
+    def name(self) -> Optional[str]:
         """Returns the name of the property, if given via the function."""
         if self._property._func:
             return self._property._func.__name__
 
-    def isset(self):
+    def isset(self) -> bool:
         """Returns True if the property is set."""
         return self.state().value is not None
 
-    def iscomputing(self):
+    def iscomputing(self) -> bool:
         """Returns True if the property is being computed."""
         return self.state().running
 
-    def callback(self, func):
+    def callback(self, func: Callable[[V], None]) -> Optional[Literal[True]]:
         """Calls the specified function back with the value.
 
         If the value already is known, the callback is performed immediately
@@ -240,7 +275,7 @@ class CachedProperty:
         self.computed.connect(func)
         self.start()
 
-    def start(self):
+    def start(self) -> None:
         """Starts the machinery that computes the value.
 
         This simply happens by calling run(), which should be reimplemented
@@ -252,7 +287,7 @@ class CachedProperty:
             state.running = True
             self.checkstart()
 
-    def checkstart(self):
+    def checkstart(self) -> None:
         """Starts if all dependencies are met."""
         for d in self._property._depends:
             prop = d.__get__(self.instance())
@@ -263,7 +298,7 @@ class CachedProperty:
         else:
             self.run()
 
-    def run(self):
+    def run(self) -> None:
         """Starts the computation.
 
         The result must be set using self.set(value), which will automatically
@@ -281,4 +316,3 @@ class CachedProperty:
 
 
 cachedproperty = CachedProperty.cachedproperty
-

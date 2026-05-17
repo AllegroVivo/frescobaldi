@@ -84,7 +84,7 @@ class AbstractExporter:
     _pixmap: Optional[QPixmap]
 
     # user settings:
-    resolution: int = 300
+    resolution: float = 300
     antialiasing: bool = True
     autocrop: bool = False
     oversample: int = 1
@@ -101,7 +101,7 @@ class AbstractExporter:
     supportsPaperColor: bool = True
 
     mimeType: MimeType = "application/octet-stream"
-    filename: str = ""
+    filename: Optional[str] = ""
     defaultBasename: str = "document"
     defaultExt: str = ""
 

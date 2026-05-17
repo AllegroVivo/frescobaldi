@@ -20,20 +20,22 @@
 """
 A simple persistent completion model (e.g. for QLineEdits).
 """
+from __future__ import annotations
 
 import atexit
 import weakref
+from typing import Dict, Callable
 
 from PySide6.QtCore import QSettings, QStringListModel, QTimer
-from PySide6.QtWidgets import QCompleter
+from PySide6.QtWidgets import QCompleter, QLineEdit
 
-import qsettings # for safely retrieving list of strings
-
-
-_models = {}
+import qsettings  # for safely retrieving list of strings
 
 
-def model(key):
+_models: Dict[str, "Model"] = {}
+
+
+def model(key: str) -> "Model":
     """Returns the model for the given settings key.
 
     A Model is instantiated if necessary.
@@ -49,7 +51,7 @@ def model(key):
         return m
 
 
-def complete(lineedit, key):
+def complete(lineedit: QLineEdit, key: str) -> Callable[[], None]:
     """A convenience function that installs a completer on the QLineEdit.
 
     The key is the QSettings key used to store the completions persistently.
@@ -65,7 +67,7 @@ def complete(lineedit, key):
     m = model(key)
     c = QCompleter(m, lineedit)
     lineedit.setCompleter(c)
-    def store(completer = weakref.ref(c)):
+    def store(completer: Callable[[], QCompleter] = weakref.ref(c)):
         """Stores the contents of the line edit in the completer's model.
 
         Does not keep a reference to any object.
@@ -102,10 +104,10 @@ class Model(QStringListModel):
     Use the addString() method to add a string.
 
     """
-    def __init__(self, key):
+    def __init__(self, key: str):
         super().__init__()
-        self.key = key
-        self._changed = False
+        self.key: str = key
+        self._changed: bool = False
         self.load()
 
     def load(self):
@@ -113,17 +115,15 @@ class Model(QStringListModel):
         self.setStringList(sorted(strings))
         self._changed = False
 
-    def save(self):
+    def save(self) -> None:
         if self._changed:
             QSettings().setValue(self.key, self.stringList())
             self._changed = False
 
-    def addString(self, text):
+    def addString(self, text: str) -> None:
         strings = self.stringList()
         if text not in strings:
             strings.append(text)
             strings.sort()
             self.setStringList(strings)
             self._changed = True
-
-

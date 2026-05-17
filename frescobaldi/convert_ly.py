@@ -20,35 +20,39 @@
 """
 Updates a document using convert-ly.
 """
-
+from __future__ import annotations
 
 import difflib
-import textwrap
 import os
 import platform
-import sys
+import textwrap
+from typing import TYPE_CHECKING, Optional, cast, Literal, Iterable
 
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtGui import QFont, QTextCursor
 from PySide6.QtWidgets import (
-    QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QGridLayout, QLabel, QLineEdit, QTabWidget, QTextBrowser, QVBoxLayout
+    QCheckBox, QDialog, QDialogButtonBox, QFileDialog, QGridLayout, QLabel,
+    QLineEdit, QTabWidget, QTextBrowser, QVBoxLayout, QWidget
 )
 
 import app
-import job
-import util
-import qutil
-import icons
-import widgets
-import htmldiff
 import cursordiff
-import lilychooser
 import documentinfo
+import htmldiff
+import job
+import lilychooser
+import qutil
 import textformats
+import widgets
+
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+    from .typeinfo import Encoding
+    from .lilypondinfo import LilyPondInfo
+    from .document import EditorDocument
 
 
-def convert(mainwindow):
+def convert(mainwindow: MainWindow) -> None:
     """Shows the dialog."""
     dlg = Dialog(mainwindow)
     dlg.addAction(mainwindow.actionCollection.help_whatsthis)
@@ -68,14 +72,14 @@ def convert(mainwindow):
 
 
 class Dialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
 
         self._info = None
-        self._text = ''
-        self._convertedtext = ''
-        self._encoding = None
-        self.mainwindow = parent
+        self._text: str = ''
+        self._convertedtext: str = ''
+        self._encoding: Optional[Encoding] = None
+        self.mainwindow: MainWindow = parent  # type: ignore
 
         self.fromVersionLabel = QLabel()
         self.fromVersion = QLineEdit()
@@ -84,20 +88,23 @@ class Dialog(QDialog):
         self.toVersion = QLineEdit()
         self.lilyChooser = lilychooser.LilyChooser(toolcommand='convert-ly')
         self.messages = QTextBrowser()
-        self.diff = QTextBrowser(lineWrapMode=QTextBrowser.LineWrapMode.NoWrap)
-        self.uni_diff = QTextBrowser(lineWrapMode=QTextBrowser.LineWrapMode.NoWrap)
-        self.copyCheck = QCheckBox(checked=
-            QSettings().value('convert_ly/copy_messages', True, bool))
+        self.diff = QTextBrowser()
+        self.diff.setLineWrapMode(QTextBrowser.LineWrapMode.NoWrap)
+        self.uni_diff = QTextBrowser()
+        self.uni_diff.setLineWrapMode(QTextBrowser.LineWrapMode.NoWrap)
+        self.copyCheck = QCheckBox()
+        self.copyCheck.setChecked(cast(bool, QSettings().value('convert_ly/copy_messages', True, bool)))
         self.tabw = QTabWidget()
 
         self.tabw.addTab(self.messages, '')
         self.tabw.addTab(self.diff, '')
         self.tabw.addTab(self.uni_diff, '')
 
+        # noinspection PyTypeChecker
         self.buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Reset | QDialogButtonBox.StandardButton.Save |
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        self.buttons.button(QDialogButtonBox.StandardButton.Ok).clicked    .connect(self.accept)
+        self.buttons.button(QDialogButtonBox.StandardButton.Ok).clicked.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
         self.buttons.button(QDialogButtonBox.StandardButton.Reset).clicked.connect(self.run)
         self.buttons.button(QDialogButtonBox.StandardButton.Save).clicked.connect(self.saveFile)
@@ -127,13 +134,14 @@ class Dialog(QDialog):
         self.lilyChooser.currentIndexChanged.connect(self.slotLilyPondVersionChanged)
         self.slotLilyPondVersionChanged()
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         self.fromVersionLabel.setText(_("From version:"))
         self.toVersionLabel.setText(_("To version:"))
         self.copyCheck.setText(_("Save convert-ly messages in document"))
         self.copyCheck.setToolTip(_(
             "If checked, the messages of convert-ly are appended as a "
-            "comment to the end of the document."))
+            "comment to the end of the document.")
+        )
         self.tabw.setTabText(0, _("&Messages"))
         self.tabw.setTabText(1, _("&Changes"))
         self.tabw.setTabText(2, _("&Diff"))
@@ -141,25 +149,25 @@ class Dialog(QDialog):
         self.buttons.button(QDialogButtonBox.StandardButton.Save).setText(_("Save as file"))
         self.setCaption()
 
-    def saveCopyCheckSetting(self):
+    def saveCopyCheckSetting(self) -> None:
         QSettings().setValue('convert_ly/copy_messages', self.copyCheck.isChecked())
 
-    def readSettings(self):
+    def readSettings(self) -> None:
         font = textformats.formatData('editor').font
         self.diff.setFont(font)
         diffFont = QFont("Monospace")
         diffFont.setStyleHint(QFont.StyleHint.TypeWriter)
         self.uni_diff.setFont(diffFont)
 
-    def slotLilyPondVersionChanged(self):
+    def slotLilyPondVersionChanged(self) -> None:
         self.setLilyPondInfo(self.lilyChooser.lilyPondInfo())
 
-    def setCaption(self):
+    def setCaption(self) -> None:
         version = self._info and self._info.versionString() or _("<unknown>")
         title = _("Convert-ly from LilyPond {version}").format(version=version)
         self.setWindowTitle(app.caption(title))
 
-    def setLilyPondInfo(self, info):
+    def setLilyPondInfo(self, info: LilyPondInfo) -> None:
         if not info:
             return
         self._info = info
@@ -169,34 +177,36 @@ class Dialog(QDialog):
         self.setDiffText()
         self.messages.clear()
 
-    def setConvertedText(self, text=''):
+    def setConvertedText(self, text: str = '') -> None:
         self._convertedtext = text
         self.buttons.button(QDialogButtonBox.StandardButton.Ok).setEnabled(bool(text))
         if text:
             self.diff.setHtml(htmldiff.htmldiff(
                 self._text, text,
                 _("Current Document"), _("Converted Document"),
-                wrapcolumn=100))
+                wrapcolumn=100
+            ))
         else:
             self.diff.clear()
 
-    def setDiffText(self, text=''):
+    def setDiffText(self, text: str = '') -> None:
         if text:
             from_filename = "current"   # TODO: maybe use real filename here
             to_filename = "converted"   # but difflib can choke on non-ascii characters,
                                         # see https://github.com/frescobaldi/frescobaldi/issues/674
             difflist = list(difflib.unified_diff(
-                    self._text.split('\n'), text.split('\n'),
-                    from_filename, to_filename))
+                self._text.split('\n'), text.split('\n'),
+                from_filename, to_filename
+            ))
             diffHLstr = self.diffHighl(difflist)
             self.uni_diff.setHtml(diffHLstr)
         else:
             self.uni_diff.clear()
 
-    def convertedText(self):
+    def convertedText(self) -> str:
         return self._convertedtext or ''
 
-    def setDocument(self, doc):
+    def setDocument(self, doc: EditorDocument) -> None:
         v = documentinfo.docinfo(doc).version_string()
         if v:
             self.fromVersion.setText(v)
@@ -208,7 +218,7 @@ class Dialog(QDialog):
         self.setConvertedText()
         self.setDiffText()
 
-    def run(self):
+    def run(self) -> None:
         """Runs convert-ly (again)."""
         fromVersion = self.fromVersion.text()
         toVersion = self.toVersion.text()
@@ -236,13 +246,16 @@ class Dialog(QDialog):
         j._process.write(self._text.encode('utf-8'))
         j._process.closeWriteChannel()
 
-    def slotJobDone(self):
+    def slotJobDone(self) -> None:
         j = self.job
         if not j.success and j.failed_to_start():
             self.messages.setPlainText(_(
                 "Could not start {convert_ly}:\n\n"
-                "{message}\n").format(convert_ly = j.command[0],
-                    message = j.error))
+                "{message}\n").format(
+                    convert_ly=j.command[0],
+                    message=j.error
+                )
+            )
             return
         out = j.stdout()
         err = j.stderr()
@@ -252,7 +265,7 @@ class Dialog(QDialog):
         if not out or self._convertedtext == self._text:
             self.messages.append('\n' + _("The document has not been changed."))
 
-    def saveFile(self):
+    def saveFile(self) -> Optional[Literal[False]]:
         """Save content in tab as file"""
         tabdata = self.getTabData(self.tabw.currentIndex())
         doc = self.mainwindow.currentDocument()
@@ -262,11 +275,11 @@ class Dialog(QDialog):
         filetypes = f'{_("Text Files")} (*.txt);;{_("HTML Files")} (*.htm);;{_("All Files")} (*)'
         filename = QFileDialog.getSaveFileName(self.mainwindow, caption, filename, filetypes)[0]
         if not filename:
-            return False # cancelled
+            return False  # cancelled
         with open(filename, 'wb') as f:
             f.write(tabdata.text.encode('utf-8'))
 
-    def getTabData(self, index):
+    def getTabData(self, index: int) -> FileInfo:  # type: ignore
         """Get content of current tab from current index"""
         if index == 0:
             return FileInfo('message', 'txt', self.messages.toPlainText())
@@ -275,7 +288,7 @@ class Dialog(QDialog):
         elif index == 2:
             return FileInfo('uni-diff', 'diff', self.uni_diff.toPlainText())
 
-    def diffHighl(self, difflist):
+    def diffHighl(self, difflist: Iterable[str]) -> str:
         """Return highlighted version of input."""
         result = []
         for l in difflist:
@@ -290,9 +303,9 @@ class Dialog(QDialog):
         return '<br>'.join(result)
 
 
-class FileInfo():
+class FileInfo:
     """Holds information useful for the file saving"""
-    def __init__(self, filename, ext, text):
-        self.filename = filename
-        self.ext = ext
-        self.text = text
+    def __init__(self, filename: str, ext: str, text: str):
+        self.filename: str = filename
+        self.ext: str = ext
+        self.text: str = text

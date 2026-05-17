@@ -318,7 +318,7 @@ class ScrollArea(QAbstractScrollArea):
             if self._dragPos is None:
                 self.setCursor(Qt.CursorShape.SizeAllCursor)
             else:
-                diff = self._dragPos - ev.pos()
+                diff = self._dragPos - ev.position().toPoint()
                 self._dragSpeed = (ev.timestamp() - self._dragTime, diff)
                 self.scrollBy(Point(diff.x(), diff.y()))
             self._dragPos = ev.position().toPoint()

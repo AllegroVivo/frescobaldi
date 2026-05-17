@@ -152,7 +152,7 @@ def matches(cursor, view=None):
         first_block = view.firstVisibleBlock()
         bottom = view.contentOffset().y() + view.viewport().height()
         pred_forward = lambda: view.blockBoundingGeometry(tokens.block).top() <= bottom
-        pred_backward = lambda: tokens.block >= first_block
+        pred_backward = lambda: first_block < tokens.block
     else:
         pred_forward = lambda: True
         pred_backward = lambda: True

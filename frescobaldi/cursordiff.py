@@ -24,7 +24,7 @@ QTextCursor instances that exist in the selected range.
 This is done by making a diff between the existing selection and the replacing
 text, and applying that diff.
 """
-
+from __future__ import annotations
 
 import difflib
 
@@ -33,7 +33,7 @@ from PySide6.QtGui import QTextCursor
 import cursortools
 
 
-def insert_text(cursor, text):
+def insert_text(cursor: QTextCursor, text: str) -> None:
     """Replaces selected text of a QTextCursor.
 
     This is done without erasing all the other QTextCursor instances that could
@@ -52,11 +52,13 @@ def insert_text(cursor, text):
     diff = difflib.SequenceMatcher(None, old, text).get_opcodes()
 
     # make a list of edits
-    edits = sorted(
-        ((start + i1, start + i2, text[j1:j2])
-         for tag, i1, i2, j1, j2 in diff
-         if tag != 'equal'),
-        reverse = True)
+    edits = sorted((
+        (start + i1, start + i2, text[j1:j2])
+        for tag, i1, i2, j1, j2 in diff
+        if tag != 'equal'
+        ),
+        reverse=True
+    )
 
     # perform the edits
     with cursortools.compress_undo(cursor):
@@ -65,5 +67,3 @@ def insert_text(cursor, text):
             cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
             cursor.insertText(text)
     cursor.setPosition(new_pos)
-
-

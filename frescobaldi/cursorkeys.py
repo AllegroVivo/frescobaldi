@@ -23,25 +23,28 @@ Configurable cursor keys behaviour.
 Install the global handler as an event filter for a Q(Plain)TextEdit.
 
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QSettings
-
 
 import app
 import gadgets.cursorkeys
 
+if TYPE_CHECKING:
+    from gadgets.cursorkeys import KeyPressHandler
 
 # global handler
-handler = gadgets.cursorkeys.KeyPressHandler()
-
+handler: KeyPressHandler = gadgets.cursorkeys.KeyPressHandler()
 
 
 def _setup():
     s = QSettings()
     s.beginGroup("view_preferences")
-    handler.handle_home = s.value("smart_home_key", True, bool)
-    handler.handle_horizontal = s.value("keep_cursor_in_line", False, bool)
-    handler.handle_vertical = s.value("smart_start_end", True, bool)
+    handler.handle_home = cast(bool, s.value("smart_home_key", True, bool))
+    handler.handle_horizontal = cast(bool, s.value("keep_cursor_in_line", False, bool))
+    handler.handle_vertical = cast(bool, s.value("smart_start_end", True, bool))
 
 app.settingsChanged.connect(_setup)
 _setup()

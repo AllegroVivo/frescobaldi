@@ -20,30 +20,41 @@
 """
 Dialog to copy contents from PDF to a raster image.
 """
+from __future__ import annotations
 
-
-import collections
 import os
-import tempfile
+from typing import TYPE_CHECKING, Optional, cast
 
-from PySide6.QtCore import QEvent, QSettings, QSize, Qt
-from PySide6.QtGui import QBitmap, QColor, QDoubleValidator, QImage, QRegion
+from PySide6.QtCore import QSettings, QSize, Qt
+from PySide6.QtGui import QColor, QDoubleValidator
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
-    QGridLayout, QHBoxLayout, QLabel, QMessageBox, QPushButton, QVBoxLayout
+    QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
+    QGridLayout, QHBoxLayout, QLabel, QMessageBox, QPushButton,
+    QVBoxLayout, QWidget
 )
+from pytestqt.qtbot import QRect
 
 import app
-import util
-import qutil
 import icons
 import qpageview.backgroundjob
-import qpageview.imageview
 import qpageview.export
+import qpageview.imageview
+import qutil
 import widgets.colorbutton
 
+if TYPE_CHECKING:
+    from qpageview.page import AbstractPage
+    from qpageview.backgroundjob import SingleRun
+    from qpageview.imageview import ImageView
+    from qpageview.document import Document
 
-def copy_image(parent_widget, page, rect=None, filename=None):
+
+def copy_image(
+    parent_widget: QWidget,
+    page: AbstractPage,
+    rect: Optional[QRect] = None,
+    filename: Optional[str] = None
+) -> None:
     """Shows the dialog to copy a PDF page to a raster image.
 
     If rect is given, only that part of the page is copied.
@@ -56,33 +67,37 @@ def copy_image(parent_widget, page, rect=None, filename=None):
 
 
 class Dialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
-        self._filename = None
-        self._page = None
-        self._rect = None
+        self._filename: Optional[str] = None
+        self._page: Optional[AbstractPage] = None
+        self._rect: Optional[QRect] = None
         self._exporter = None
-        self.runJob = qpageview.backgroundjob.SingleRun()
-        self.imageViewer = qpageview.imageview.ImageView()
+        self.runJob: SingleRun = qpageview.backgroundjob.SingleRun()
+        self.imageViewer: ImageView = qpageview.imageview.ImageView()
         self.dpiLabel = QLabel()
         self.dpiCombo = QComboBox(insertPolicy=QComboBox.InsertPolicy.NoInsert, editable=True)
-        self.dpiCombo.lineEdit().setCompleter(None)
+        self.dpiCombo.lineEdit().setCompleter(None)  # type: ignore
         self.dpiCombo.setValidator(QDoubleValidator(10.0, 1200.0, 4, self.dpiCombo))
         # 96 dpi is a standard PC screen; 192 dpi is high-DPI or "Retina"
         # 300 dpi and up are print resolutions
         self.dpiCombo.addItems([format(i) for i in (96, 192, 300, 600, 1200)])
 
-        self.colorCheck = QCheckBox(checked=False)
+        self.colorCheck = QCheckBox()
+        self.colorCheck.setChecked(False)
         self.colorButton = widgets.colorbutton.ColorButton()
         self.colorButton.setColor(QColor(Qt.GlobalColor.white))
-        self.grayscale = QCheckBox(checked=False)
+        self.grayscale = QCheckBox()
+        self.grayscale.setChecked(False)
         self.crop = QCheckBox()
-        self.antialias = QCheckBox(checked=True)
-        self.scaleup = QCheckBox(checked=False)
-        self.dragfile = QPushButton(icons.get("image-x-generic"), None, None)
-        self.copyfile = QPushButton(icons.get('edit-copy'), None, None)
-        self.dragdata = QPushButton(icons.get("image-x-generic"), None, None)
-        self.copydata = QPushButton(icons.get('edit-copy'), None, None)
+        self.antialias = QCheckBox()
+        self.antialias.setChecked(True)
+        self.scaleup = QCheckBox()
+        self.scaleup.setChecked(False)
+        self.dragfile = QPushButton(icons.get("image-x-generic"), "", None)
+        self.copyfile = QPushButton(icons.get('edit-copy'), "", None)
+        self.dragdata = QPushButton(icons.get("image-x-generic"), "", None)
+        self.copydata = QPushButton(icons.get('edit-copy'), "", None)
         self.buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         self.saveButton = self.buttons.addButton('', QDialogButtonBox.ButtonRole.ApplyRole)
         self.saveButton.setIcon(icons.get('document-save'))
@@ -136,7 +151,7 @@ class Dialog(QDialog):
         self.saveButton.clicked.connect(self.saveAs)
         qutil.saveDialogSize(self, "copy_image/dialog/size", QSize(480, 320))
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         self.setCaption()
         self.dpiLabel.setText(_("DPI:"))
         self.colorCheck.setText(_("Background:"))
@@ -148,7 +163,8 @@ class Dialog(QDialog):
         self.scaleup.setText(_("Scale 2x"))
         self.scaleup.setToolTip(_(
             "Render twice as large and scale back down\n"
-            "(recommended for small DPI values)."))
+            "(recommended for small DPI values)."
+        ))
         self.dragdata.setText(_("Drag"))
         self.dragfile.setText(_("Drag File"))
         self.copydata.setText(_("&Copy"))
@@ -164,10 +180,11 @@ class Dialog(QDialog):
             "<p>\n"
             "You can also drag the small picture icon in the bottom right, "
             "which drags the actual file on disk, e.g. to an e-mail message.\n"
-            "</p>").format(command="\u2318"))
+            "</p>").format(command="\u2318")
+        )
         self.updateFileTypeUITexts()
 
-    def updateFileTypeUITexts(self):
+    def updateFileTypeUITexts(self) -> None:
         """Update the texts in buttons that carry file type information.
 
         Called from translateUI() and from updateExport().
@@ -178,20 +195,20 @@ class Dialog(QDialog):
         self.copydata.setToolTip(_("Copy the image to the clipboard."))
         self.copyfile.setToolTip(_("Copy the image to the clipboard as a PNG file."))
 
-    def readSettings(self):
+    def readSettings(self) -> None:
         s = QSettings()
         s.beginGroup('copy_image')
         # 300 dpi is standard print resolution
-        self.dpiCombo.setEditText(s.value("dpi", "300", str))
-        color = s.value("papercolor", QColor(), QColor)
+        self.dpiCombo.setEditText(cast(str, s.value("dpi", "300", str)))
+        color = cast(QColor, s.value("papercolor", QColor(), QColor))
         self.colorButton.setColor(color if color.isValid() else Qt.GlobalColor.white)
         self.colorCheck.setChecked(color.isValid())
-        self.grayscale.setChecked(s.value("grayscale", False, bool))
-        self.crop.setChecked(s.value("autocrop", False, bool))
-        self.antialias.setChecked(s.value("antialias", True, bool))
-        self.scaleup.setChecked(s.value("scaleup", False, bool))
+        self.grayscale.setChecked(cast(bool, s.value("grayscale", False, bool)))
+        self.crop.setChecked(cast(bool, s.value("autocrop", False, bool)))
+        self.antialias.setChecked(cast(bool, s.value("antialias", True, bool)))
+        self.scaleup.setChecked(cast(bool, s.value("scaleup", False, bool)))
 
-    def writeSettings(self):
+    def writeSettings(self) -> None:
         s = QSettings()
         s.beginGroup('copy_image')
         s.setValue("dpi", self.dpiCombo.currentText())
@@ -202,15 +219,20 @@ class Dialog(QDialog):
         s.setValue("antialias", self.antialias.isChecked())
         s.setValue("scaleup", self.scaleup.isChecked())
 
-    def setCaption(self):
+    def setCaption(self) -> None:
         if self._filename:
             filename = os.path.basename(self._filename)
         else:
             filename = _("<unknown>")
-        title = _("Image from {filename}").format(filename = filename)
+        title = _("Image from {filename}").format(filename=filename)
         self.setWindowTitle(app.caption(title))
 
-    def setPage(self, page, rect, filename):
+    def setPage(
+        self,
+        page: AbstractPage,
+        rect: Optional[QRect],
+        filename: Optional[str]
+    ) -> None:
         page = page.copy()
         if page.renderer:
             page.renderer = page.renderer.copy()
@@ -220,7 +242,7 @@ class Dialog(QDialog):
         self.setCaption()
         self.updateExport()
 
-    def updateExport(self):
+    def updateExport(self) -> None:
         e = self._exporter = qpageview.export.ImageExporter(self._page, self._rect)
         e.filename = self._filename
 
@@ -261,7 +283,7 @@ class Dialog(QDialog):
         self.runJob(e.document, self.exportDone)
         self.setCursor(Qt.CursorShape.WaitCursor)
 
-    def exportDone(self, document):
+    def exportDone(self, document: Document) -> None:
         self.unsetCursor()
         self.imageViewer.setDocument(document)
         if self.imageViewer.viewMode() is not qpageview.FitBoth:
@@ -273,30 +295,35 @@ class Dialog(QDialog):
         self.copydata.setEnabled(True)
         self.saveButton.setEnabled(True)
 
-    def copyDataToClipboard(self):
+    def copyDataToClipboard(self) -> None:
         self._exporter.copyData()
 
-    def copyFileToClipboard(self):
+    def copyFileToClipboard(self) -> None:
         self._exporter.copyFile()
 
-    def dragData(self):
+    def dragData(self) -> None:
         self._exporter.dragData(self)
         self.dragdata.setDown(False)
 
-    def dragFile(self):
+    def dragFile(self) -> None:
         self._exporter.dragFile(self)
         self.dragfile.setDown(False)
 
-    def saveAs(self):
+    def saveAs(self) -> None:
         typeFilter = _("PNG Image (*.png)")
         filename = self._exporter.suggestedFilename()
-        filename = QFileDialog.getSaveFileName(self,
-            _("Save Image As"), filename, filter=typeFilter)[0]
+        filename = QFileDialog.getSaveFileName(
+            self,
+            _("Save Image As"),
+            filename,
+            filter=typeFilter
+        )[0]
         if filename:
             try:
                 self._exporter.save(filename)
             except OSError:
-                QMessageBox.critical(self, _("Error"), _(
-                    "Could not save the image."))
-
-
+                QMessageBox.critical(
+                    self,
+                    _("Error"),
+                    _("Could not save the image.")
+                )

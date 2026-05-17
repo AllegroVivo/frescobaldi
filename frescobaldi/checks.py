@@ -25,15 +25,16 @@ The user-visible strings need not to be marked for translation, as the
 translation infrastructure is not yet set up.
 
 """
+from __future__ import annotations
 
-import os
+# import os
 import importlib.util
 import sys
 
 import appinfo
 
 
-def error(title, message, can_continue=False):
+def error(title: str, message: str, can_continue: bool = False) -> None:
     """Display an error, and exit if can_continue is False.
 
     Displays a message box if PySide6 is available, otherwise write the error to
@@ -74,12 +75,14 @@ def error(title, message, can_continue=False):
 v = sys.version_info
 r = appinfo.required_python_version
 if v < r:
-    error("Python version too old",
-        f"Frescobaldi is started with Python {v[0]}.{v[1]} \
-but requires at least version {r[0]}.{r[1]}.")
+    error(
+        "Python version too old",
+        f"Frescobaldi is started with Python {v[0]}.{v[1]} "
+        "but requires at least version {r[0]}.{r[1]}."
+    )
 
 # Check Qt version
-from PySide6.QtCore import QLibraryInfo, QVersionNumber
+from PySide6.QtCore import QLibraryInfo
 qt_version = QLibraryInfo.version()
 ## It's better to test for specific features than the overall Qt version
 #qt_required = QVersionNumber(*appinfo.required_qt_version)
@@ -90,39 +93,47 @@ qt_version = QLibraryInfo.version()
 
 # Check QtSvg availability
 if importlib.util.find_spec('PySide6.QtSvg') is None:
-    error("Missing Qt module",
+    error(
+        "Missing Qt module",
+
         "Frescobaldi cannot start because the "
-        "PySide6.QtSvg module is not installed.")
+        "PySide6.QtSvg module is not installed."
+    )
 
 # Check QtPdf availability
 if importlib.util.find_spec('PySide6.QtPdf') is None:
-    error("Missing Qt module",
+    error(
+        "Missing Qt module",
         "Frescobaldi cannot start because the "
-        "PySide6.QtPdf module is not installed.")
+        "PySide6.QtPdf module is not installed."
+    )
 
 # Check qpageview availability
 if importlib.util.find_spec('qpageview') is None:
-    error("The 'qpageview' module can't be found.",
+    error(
+        "The 'qpageview' module can't be found.",
         "Frescobaldi can't find the 'qpageview' module. This module is "
         "required for the Music View and other viewers inside Frescobaldi, "
         "and can be downloaded from http://github.com/frescobaldi/qpageview."
         "\n\n"
-        "Unfortunately, Frescobaldi cannot run without it.")
+        "Unfortunately, Frescobaldi cannot run without it."
+    )
 
 # Check for PDF link support (added in Qt 6.6)
 # As of 2026, some Linux distros still ship older Qt versions without it.
 try:
     from PySide6.QtPdf import QPdfLinkModel
 except ImportError:
-    error("Point-and-click unavailable",
+    error(
+        "Point-and-click unavailable",
         f"You are using an older Qt version ({qt_version.toString()}) "
         "that lacks support for links in PDF documents. "
         "Frescobaldi will run, but point-and-click will be unavailable."
         "\n\n"
         "To fix this, install Qt 6.6 or newer.",
-        can_continue=True)
+        can_continue=True
+    )
 
-
-# The python-ly check could also move where, but we don't do it now, because
+# The python-ly check could also move here, but we don't do it now, because
 # the --python-ly option could point to another path, and the startup arguments
 # are parsed later.

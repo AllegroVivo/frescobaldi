@@ -20,6 +20,9 @@
 """
 Function for helping the user to report bugs.
 """
+from __future__ import annotations
+
+from typing import Optional
 
 from PySide6.QtCore import QUrl, QUrlQuery
 
@@ -27,9 +30,10 @@ import helpers
 import appinfo
 import debuginfo
 
-def new_github_issue(title, body):
+
+def new_github_issue(title: str, body: str) -> None:
     """
-    Open a web brower on a page to create a new issue on GitHub.
+    Open a web browser on a page to create a new issue on GitHub.
 
     Information about the versions of Frescobaldi and its dependencies will
     be appended to the body.
@@ -46,7 +50,7 @@ def new_github_issue(title, body):
     url.setQuery(query)
     helpers.openUrl(url)
 
-def email(subject, body, recipient=None):
+def email(subject: str, body: str, recipient: Optional[str] = None) -> None:
     """Opens the e-mail composer with the given subject and body, with version information added to it."""
     subject = f"[{appinfo.appname} {appinfo.version}] {subject}"
     body = "{}\n\n{}\n\n".format(debuginfo.version_info_string('\n'), body)

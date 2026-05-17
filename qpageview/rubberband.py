@@ -392,10 +392,10 @@ class Rubberband(QWidget):
                 if self.isVisible():
                     # this cancels a previous selection if we were visible
                     self._setSelectionFromGeometry(QRect())
-                self.setGeometry(QRect(ev.pos(), QSize(0, 0)))
-                self._setLayoutOffset(ev.pos())
+                self.setGeometry(QRect(ev.position().toPoint(), QSize(0, 0)))
+                self._setLayoutOffset(ev.position().toPoint())
                 self._oldZoom = viewport.parent().zoomFactor()
-                self.startDrag(ev.pos(), ev.button())
+                self.startDrag(ev.position().toPoint(), ev.button())
                 self._dragedge = _RIGHT | _BOTTOM
                 self.adjustCursor(self._dragedge)
                 self.show()
@@ -409,7 +409,7 @@ class Rubberband(QWidget):
                 if ev.button() == Qt.MouseButton.RightButton:
                     QApplication.postEvent(
                         viewport,
-                        QContextMenuEvent(QContextMenuEvent.Reason.Mouse, ev.pos())
+                        QContextMenuEvent(QContextMenuEvent.Reason.Mouse, ev.position().toPoint())
                     )
                 return True
         return False
@@ -440,5 +440,5 @@ class Rubberband(QWidget):
         if ev.button() == Qt.MouseButton.RightButton:
             QApplication.postEvent(
                 self.parent(),  # type: ignore - SP
-                QContextMenuEvent(QContextMenuEvent.Reason.Mouse, ev.pos() + self.pos())
+                QContextMenuEvent(QContextMenuEvent.Reason.Mouse, ev.position().toPoint() + self.pos())
             )

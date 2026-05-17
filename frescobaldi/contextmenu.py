@@ -23,29 +23,33 @@ The contextmenu of the editor.
 This module is imported when a contextmenu event occurs in the View (view.py).
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, List
 
 from PySide6.QtCore import QTimer, QUrl
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QTextCursor
+from PySide6.QtWidgets import QMenu
 
 import app
 import icons
 import util
 import browseriface
 
+if TYPE_CHECKING:
+    from .view import View
+    from .mainwindow import MainWindow
 
-def contextmenu(view):
+
+def contextmenu(view: View) -> QMenu:
     cursor = view.textCursor()
     menu = view.createStandardContextMenu()
-    mainwindow = view.window()
+    mainwindow: MainWindow = view.window()  # type: ignore
 
     # create the actions in the actions list
     actions = []
-
     actions.extend(open_files(cursor, menu, mainwindow))
-
     actions.extend(jump_to_definition(cursor, menu, mainwindow))
-
 
     if cursor.hasSelection():
         import panelmanager
@@ -71,7 +75,7 @@ def contextmenu(view):
     return menu
 
 
-def open_files(cursor, menu, mainwindow):
+def open_files(cursor: QTextCursor, menu: QMenu, mainwindow: MainWindow) -> List[QAction]:
     """Return a list of actions (maybe empty) for files at the cursor to open."""
     def action(filename):
         url = QUrl.fromLocalFile(filename)
@@ -88,7 +92,7 @@ def open_files(cursor, menu, mainwindow):
     return list(map(action, open_file_at_cursor.filenames_at_cursor(cursor)))
 
 
-def jump_to_definition(cursor, menu, mainwindow):
+def jump_to_definition(cursor: QTextCursor, menu: QMenu, mainwindow: MainWindow) -> List[QAction]:
     """Return a list of context menu actions jumping to the definition."""
     import definition
     node = definition.refnode(cursor)
@@ -99,7 +103,8 @@ def jump_to_definition(cursor, menu, mainwindow):
             if target:
                 if target.document is node.document:
                     a.setText(_("&Jump to definition (line {num})").format(
-                        num = node.document.index(node.document.block(target.position)) + 1))
+                        num=node.document.index(node.document.block(target.position)) + 1)
+                    )
                 else:
                     a.setText(_("&Jump to definition (in {filename})").format(
                         filename=util.homify(target.document.filename)))

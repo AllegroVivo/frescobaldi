@@ -260,7 +260,7 @@ class MusicView(QWidget):
         pos = self.view.mapToGlobal(QPoint(0, 0))
         link, cursor = None, None
         # mouse inside view?
-        if self.view.mapFromGlobal(QCursor.pos()) in self.view.viewport().rect():
+        if self.view.mapFromGlobal(QCursor.pos()) in self.view.viewport().rect().getCoords():
             pos = QCursor.pos()
             pos_in_viewport = self.view.viewport().mapFromGlobal(pos)
             page, link = self.view.linkAt(pos_in_viewport)
