@@ -20,7 +20,9 @@
 """
 Manages some actions and per-document preferences that are set in metainfo.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QKeySequence
@@ -32,14 +34,20 @@ import metainfo
 import plugin
 import icons
 
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+    from .document import Document
+    from .view import View
 
-def get(mainwindow):
+
+def get(mainwindow: MainWindow) -> DocumentActions:
     """Returns the DocumentActions instance for the specified MainWindow."""
     return DocumentActions.instance(mainwindow)
 
 
 class DocumentActions(plugin.MainWindowPlugin):
-    def __init__(self, mainwindow):
+    # noinspection PyMissingConstructor
+    def __init__(self, mainwindow: MainWindow):
         ac = self.actionCollection = Actions()
         actioncollectionmanager.manager(mainwindow).addActionCollection(ac)
         ac.view_goto_file_or_definition.triggered.connect(self.gotoFileOrDefinition)
@@ -67,7 +75,7 @@ class DocumentActions(plugin.MainWindowPlugin):
         mainwindow.currentDocumentChanged.connect(self.updateDocActions)
         mainwindow.selectionStateChanged.connect(self.updateSelectionActions)
 
-    def updateDocActions(self, doc):
+    def updateDocActions(self, doc: Document):
         minfo = metainfo.info(doc)
         if minfo.highlighting:
             highlighter.highlighter(doc)
@@ -75,7 +83,7 @@ class DocumentActions(plugin.MainWindowPlugin):
         ac.view_highlighting.setChecked(minfo.highlighting)
         ac.tools_indent_auto.setChecked(minfo.auto_indent)
 
-    def updateSelectionActions(self, selection):
+    def updateSelectionActions(self, selection: bool) -> None:
         self.actionCollection.edit_cut_assign.setEnabled(selection)
         self.actionCollection.edit_move_to_include_file.setEnabled(selection)
         self.actionCollection.tools_quick_remove_comments.setEnabled(selection)

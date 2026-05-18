@@ -20,12 +20,14 @@
 """
 Cut selected text and assign it to a LilyPond variable.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
 
 import os.path
 
 from PySide6.QtGui import QTextCursor
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 import app
 import util
@@ -38,13 +40,20 @@ import metainfo
 import indent
 import inputdialog
 
+if TYPE_CHECKING:
+    from .document import EditorDocument
 
-def cut_assign(cursor):
+
+def cut_assign(cursor: QTextCursor) -> None:
     """Cuts selected text and assigns it to a LilyPond variable."""
     # ask the variable name
-    name = inputdialog.getText(None, _("Cut and Assign"), _(
-        "Please enter the name for the variable to assign the selected "
-        "text to:"), regexp="[A-Za-z]+")
+    name = inputdialog.getText(
+        None,
+        _("Cut and Assign"),
+        _("Please enter the name for the variable to assign the "
+          "selected text to:"),
+        regexp="[A-Za-z]+"
+    )
     if not name:
         return
 
@@ -100,17 +109,17 @@ def cut_assign(cursor):
             indent.re_indent(insert)
 
 
-def move_to_include_file(cursor, parent_widget=None):
+def move_to_include_file(cursor: QTextCursor, parent_widget: Optional[QWidget] = None) -> None:
     """Opens a dialog to save the cursor's selection to a file.
 
     The cursor's selection is then replaced with an \\include statement.
     This function does its best to supply a good default filename and
     use it correctly in a relative \\include statement.
 
-    Of course it only works well if the document already has a filename.
+    Of course, it only works well if the document already has a filename.
 
     """
-    doc = cursor.document()
+    doc: EditorDocument = cursor.document()  # type: ignore
     text = cursor.selection().toPlainText()
     mode = fileinfo.textmode(text)
     caption = app.caption(_("dialog title", "Move to include file"))
@@ -126,20 +135,19 @@ def move_to_include_file(cursor, parent_widget=None):
     filename = os.path.join(dirname, docname)
     filename = QFileDialog.getSaveFileName(parent_widget, caption, filename, filetypes)[0]
     if not filename:
-        return # cancelled
+        return  # cancelled
     data = util.encode(util.platform_newlines(text))
     try:
         with open(filename, "wb") as f:
             f.write(data)
     except OSError as e:
         msg = _("{message}\n\n{strerror} ({errno})").format(
-            message = _("Could not write to: {url}").format(url=filename),
-            strerror = e.strerror,
-            errno = e.errno)
+            message=_("Could not write to: {url}").format(url=filename),
+            strerror=e.strerror,
+            errno=e.errno
+        )
         QMessageBox.critical(parent_widget, app.caption(_("Error")), msg)
         return
     filename = os.path.relpath(filename, dirname)
     command = f'\\include "{filename}"\n'
     cursor.insertText(command)
-
-

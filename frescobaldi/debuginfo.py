@@ -20,17 +20,17 @@
 """
 Provides version information of important supporting modules.
 """
-
+from __future__ import annotations
 
 import functools
 import platform
-import os
+from typing import Callable, Iterator, Tuple
 
 import app
 import appinfo
 
 
-def _catch_unknown(f):
+def _catch_unknown(f: Callable[[], str]) -> Callable[[], str]:
     """Decorate a function, returning "unknown" on import/attribute error."""
     @functools.wraps(f)
     def wrapper():
@@ -42,26 +42,26 @@ def _catch_unknown(f):
 
 
 @_catch_unknown
-def app_version():
+def app_version() -> str:
     import appinfo
     return appinfo.version
 
 @_catch_unknown
-def pyside_version():
+def pyside_version() -> str:
     import PySide6.QtCore
     return PySide6.__version__
 
 @_catch_unknown
-def qt_version():
+def qt_version() -> str:
     import PySide6.QtCore
     return PySide6.QtCore.qVersion()
 
 @_catch_unknown
-def python_version():
+def python_version() -> str:
     return platform.python_version()
 
 @_catch_unknown
-def operating_system():
+def operating_system() -> str:
     plat = platform.platform()
     if platform.system() == "Linux":
         try:
@@ -74,18 +74,18 @@ def operating_system():
         return plat
 
 @_catch_unknown
-def ly_version():
+def ly_version() -> str:
     import ly.pkginfo
     return ly.pkginfo.version
 
 @_catch_unknown
-def qpageview_version():
+def qpageview_version() -> str:
     import qpageview
     return qpageview.version_string
 
 if platform.system() == "Darwin":
     @_catch_unknown
-    def mac_installation_kind():
+    def mac_installation_kind() -> str:
         import macos
         if macos.inside_lightweight_app_bundle():
             return 'lightweight .app bundle'
@@ -96,14 +96,14 @@ if platform.system() == "Darwin":
 
 elif platform.system() == "Linux":
     @_catch_unknown
-    def linux_installation_kind():
+    def linux_installation_kind() -> str:
         import linux
         if linux.inside_flatpak():
             return "Flatpak"
         else:
             return "distro package or installed from source"
 
-def version_info_named():
+def version_info_named() -> Iterator[Tuple[str, str]]:
     """Yield all the relevant names and their version string."""
     yield appinfo.appname, appinfo.version
     yield "Extension API", appinfo.extension_api
@@ -127,6 +127,6 @@ def version_info_named():
         yield "Installation kind", linux_installation_kind()
 
 
-def version_info_string(separator='\n'):
+def version_info_string(separator: str = '\n') -> str:
     """Return all version names as a string, joint with separator."""
     return separator.join(map("{0[0]}: {0[1]}".format, version_info_named()))

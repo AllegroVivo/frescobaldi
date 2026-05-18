@@ -20,7 +20,9 @@
 """
 Find the definition of variables.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Union, Optional
 
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QTextCursor
@@ -30,29 +32,40 @@ import documentinfo
 import ly.music.items
 import browseriface
 
+if TYPE_CHECKING:
+    from ly.music.items import UserCommand, MarkupUserCommand
+    from ly.document import Document
+    from .mainwindow import MainWindow
 
-def refnode(cursor):
+
+def refnode(cursor: QTextCursor) -> Optional[Union[UserCommand, MarkupUserCommand]]:
     """Return the music item at the cursor if that probably is a reference to a definition elsewhere."""
     node = documentinfo.music(cursor.document()).node(cursor.position())
-    if (node and node.end_position() >= cursor.selectionEnd()
+    if (
+        node
+        and node.end_position() >= cursor.selectionEnd()
         and isinstance(node, (
-                ly.music.items.UserCommand,
-                ly.music.items.MarkupUserCommand,
-        ))):
+            ly.music.items.UserCommand,
+            ly.music.items.MarkupUserCommand,
+        ))
+    ):
         return node
 
 
-def target(node):
+def target(node: Union[UserCommand, MarkupUserCommand]) -> Optional[Union[UserCommand, MarkupUserCommand, Document]]:
     """Return the target node (where the node is defined)."""
     value = node.value()
     if value:
         target = value.parent()
         if isinstance(target, ly.music.items.Document):
-            target = value # happens with #(define-markup-command ...)
+            target = value  # happens with #(define-markup-command ...)
         return target
 
 
-def goto_definition(mainwindow, cursor=None):
+def goto_definition(
+    mainwindow: MainWindow,
+    cursor: Optional[QTextCursor] = None
+) -> Optional[bool]:
     """Go to the definition of the item the mainwindow's cursor is at.
 
     Return True if there was a definition.
@@ -82,5 +95,3 @@ def goto_target(mainwindow, target):
     cursor.setPosition(target.position)
     browseriface.get(mainwindow).setTextCursor(cursor)
     mainwindow.currentView().centerCursor()
-
-
