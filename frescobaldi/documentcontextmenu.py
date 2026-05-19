@@ -21,36 +21,45 @@
 A context menu with actions for a Document.
 Used by the tabbar and the doclist tool.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Callable, Optional
 
 import weakref
 
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 import app
 import icons
 import documentmenu
 
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+    from .document import EditorDocument
+    from .documentmenu import DocumentMenu
+
 
 class DocumentContextMenu(QMenu):
-    def __init__(self, mainwindow):
+    def __init__(self, mainwindow: MainWindow):
         super().__init__(mainwindow)
-        self._doc = lambda: None
+        self._doc: Callable[[], Optional[EditorDocument]] = lambda: None
 
         self.createActions()
         app.translateUI(self)
         self.aboutToShow.connect(self.updateActions)
 
-    def createActions(self):
+    def createActions(self) -> None:
         self.addMenu(self.menu_document())
         self.addSeparator()
-        self.doc_save = self.addAction(icons.get('document-save'), '')
-        self.doc_save_as = self.addAction(icons.get('document-save-as'), '')
+        self.doc_save: QAction = self.addAction(icons.get('document-save'), '')  # type: ignore
+        self.doc_save_as: QAction = self.addAction(icons.get('document-save-as'), '')  # type: ignore
         self.addSeparator()
-        self.doc_close = self.addAction(icons.get('document-close'), '')
-        self.doc_close_others = self.addAction(icons.get('document-close'), '')
+        self.doc_close: QAction = self.addAction(icons.get('document-close'), '')  # type: ignore
+        self.doc_close_others: QAction = self.addAction(icons.get('document-close'), '')  # type: ignore
         self.addSeparator()
-        self.doc_toggle_sticky = self.addAction(icons.get('pushpin'), '')
+        self.doc_toggle_sticky: QAction = self.addAction(icons.get('pushpin'), '')  # type: ignore
         self.doc_toggle_sticky.setCheckable(True)
 
         self.doc_save.triggered.connect(self.docSave)
@@ -59,7 +68,7 @@ class DocumentContextMenu(QMenu):
         self.doc_close_others.triggered.connect(self.docCloseOther)
         self.doc_toggle_sticky.triggered.connect(self.docToggleSticky)
 
-    def updateActions(self):
+    def updateActions(self) -> None:
         """Called just before show."""
         doc = self._doc()
         if doc:
@@ -67,48 +76,49 @@ class DocumentContextMenu(QMenu):
             engraver = engrave.Engraver.instance(self.mainwindow())
             self.doc_toggle_sticky.setChecked(doc is engraver.stickyDocument())
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         self.doc_save.setText(_("&Save"))
         self.doc_save_as.setText(_("Save &As..."))
         self.doc_close.setText(_("&Close"))
         self.doc_close_others.setText(_("Close Other Documents"))
         self.doc_toggle_sticky.setText(_("Always &Engrave This Document"))
 
-    def mainwindow(self):
-        return self.parentWidget()
+    def mainwindow(self) -> MainWindow:
+        return self.parentWidget()  # type: ignore
 
-    def exec(self, document, pos):
+    # noinspection PyMethodOverriding
+    def exec(self, document: EditorDocument, pos: QPoint) -> None:
         self._doc = weakref.ref(document)
         super().exec(pos)
 
-    def menu_document(self):
+    def menu_document(self) -> DocumentMenu:
         return documentmenu.DocumentMenu(self.mainwindow())
 
-    def docSave(self):
-        doc = self._doc()
+    def docSave(self) -> None:
+        doc: Optional[EditorDocument] = self._doc()
         if doc:
             self.mainwindow().saveDocument(doc)
 
-    def docSaveAs(self):
-        doc = self._doc()
+    def docSaveAs(self) -> None:
+        doc: Optional[EditorDocument] = self._doc()
         if doc:
             self.mainwindow().saveDocumentAs(doc)
 
-    def docClose(self):
-        doc = self._doc()
+    def docClose(self) -> None:
+        doc: Optional[EditorDocument] = self._doc()
         if doc:
             self.mainwindow().closeDocument(doc)
 
-    def docCloseOther(self):
+    def docCloseOther(self) -> None:
         """ Closes all documents that are not our current document. """
         cur = self._doc()
         if not cur:
-            return # not clear which to keep open...
+            return  # not clear which to keep open...
         win = self.mainwindow()
         win.setCurrentDocument(cur, findOpenView=True)
         win.closeOtherDocuments()
 
-    def docToggleSticky(self):
+    def docToggleSticky(self) -> None:
         doc = self._doc()
         if doc:
             import engrave
@@ -117,5 +127,3 @@ class DocumentContextMenu(QMenu):
                 engraver.setStickyDocument(None)
             else:
                 engraver.setStickyDocument(doc)
-
-

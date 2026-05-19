@@ -22,10 +22,11 @@ Manages some actions and per-document preferences that are set in metainfo.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtWidgets import QWidget
 
 import actioncollection
 import actioncollectionmanager
@@ -36,7 +37,7 @@ import icons
 
 if TYPE_CHECKING:
     from .mainwindow import MainWindow
-    from .document import Document
+    from .document import Document, EditorDocument
     from .view import View
 
 
@@ -100,118 +101,119 @@ class DocumentActions(plugin.MainWindowPlugin):
         self.actionCollection.tools_directions_force_neutral.setEnabled(selection)
         self.actionCollection.tools_directions_force_down.setEnabled(selection)
 
-    def currentView(self):
+    def currentView(self) -> View:
         return self.mainwindow().currentView()
 
-    def currentDocument(self):
+    def currentDocument(self) -> EditorDocument:
         return self.mainwindow().currentDocument()
 
-    def updateOtherDocActions(self):
+    def updateOtherDocActions(self) -> None:
         """Calls updateDocActions() in other instances that show same document."""
         doc = self.currentDocument()
         for i in self.instances():
             if i is not self and i.currentDocument() == doc:
                 i.updateDocActions(doc)
 
-    def gotoFileOrDefinition(self):
+    def gotoFileOrDefinition(self) -> None:
         import open_file_at_cursor
         result = open_file_at_cursor.open_file_at_cursor(self.mainwindow())
         if not result:
             import definition
             definition.goto_definition(self.mainwindow())
 
-    def cutAssign(self):
+    def cutAssign(self) -> None:
         import cut_assign
         cut_assign.cut_assign(self.currentView().textCursor())
 
-    def moveToIncludeFile(self):
+    def moveToIncludeFile(self) -> None:
         import cut_assign
         cut_assign.move_to_include_file(self.currentView().textCursor(), self.mainwindow())
 
-    def toggleAuto_indent(self):
+    def toggleAuto_indent(self) -> None:
         minfo = metainfo.info(self.currentDocument())
         minfo.auto_indent = not minfo.auto_indent
         self.updateOtherDocActions()
 
-    def re_indent(self):
+    def re_indent(self) -> None:
         import indent
         indent.re_indent(self.currentView().textCursor())
 
-    def reFormat(self):
+    def reFormat(self) -> None:
         import reformat
         reformat.reformat(self.currentView().textCursor())
 
-    def removeTrailingWhitespace(self):
+    def removeTrailingWhitespace(self) -> None:
         import reformat
         reformat.remove_trailing_whitespace(self.currentView().textCursor())
 
-    def toggleHighlighting(self):
+    def toggleHighlighting(self) -> None:
         doc = self.currentDocument()
         minfo = metainfo.info(doc)
         minfo.highlighting = not minfo.highlighting
         highlighter.highlighter(doc).setHighlighting(minfo.highlighting)
         self.updateOtherDocActions()
 
-    def convertLy(self):
+    def convertLy(self) -> None:
         import convert_ly
         convert_ly.convert(self.mainwindow())
 
-    def quickRemoveComments(self):
+    def quickRemoveComments(self) -> None:
         import quickremove
         quickremove.comments(self.mainwindow().textCursor())
 
-    def quickRemoveArticulations(self):
+    def quickRemoveArticulations(self) -> None:
         import quickremove
         quickremove.articulations(self.mainwindow().textCursor())
 
-    def quickRemoveOrnaments(self):
+    def quickRemoveOrnaments(self) -> None:
         import quickremove
         quickremove.ornaments(self.mainwindow().textCursor())
 
-    def quickRemoveInstrumentScripts(self):
+    def quickRemoveInstrumentScripts(self) -> None:
         import quickremove
         quickremove.instrument_scripts(self.mainwindow().textCursor())
 
-    def quickRemoveSlurs(self):
+    def quickRemoveSlurs(self) -> None:
         import quickremove
         quickremove.slurs(self.mainwindow().textCursor())
 
-    def quickRemoveBeams(self):
+    def quickRemoveBeams(self) -> None:
         import quickremove
         quickremove.beams(self.mainwindow().textCursor())
 
-    def quickRemoveLigatures(self):
+    def quickRemoveLigatures(self) -> None:
         import quickremove
         quickremove.ligatures(self.mainwindow().textCursor())
 
-    def quickRemoveDynamics(self):
+    def quickRemoveDynamics(self) -> None:
         import quickremove
         quickremove.dynamics(self.mainwindow().textCursor())
 
-    def quickRemoveFingerings(self):
+    def quickRemoveFingerings(self) -> None:
         import quickremove
         quickremove.fingerings(self.mainwindow().textCursor())
 
-    def quickRemoveMarkup(self):
+    def quickRemoveMarkup(self) -> None:
         import quickremove
         quickremove.markup(self.mainwindow().textCursor())
 
-    def forceDirectionsUp(self):
+    def forceDirectionsUp(self) -> None:
         import quickremove
         quickremove.force_directions(self.mainwindow().textCursor(), 'up')
 
-    def forceDirectionsNeutral(self):
+    def forceDirectionsNeutral(self) -> None:
         import quickremove
         quickremove.force_directions(self.mainwindow().textCursor(), 'neutral')
 
-    def forceDirectionsDown(self):
+    def forceDirectionsDown(self) -> None:
         import quickremove
         quickremove.force_directions(self.mainwindow().textCursor(), 'down')
 
 
 class Actions(actioncollection.ActionCollection):
     name = "documentactions"
-    def createActions(self, parent):
+
+    def createActions(self, parent: Optional[QWidget] = None):
         self.edit_cut_assign = QAction(parent)
         self.edit_move_to_include_file = QAction(parent)
         self.view_highlighting = QAction(parent)
@@ -244,7 +246,7 @@ class Actions(actioncollection.ActionCollection):
         self.view_goto_file_or_definition.setShortcut(QKeySequence(Qt.Modifier.ALT | Qt.Key.Key_Return))
         self.edit_cut_assign.setShortcut(QKeySequence(Qt.Modifier.SHIFT | Qt.Modifier.CTRL | Qt.Key.Key_X))
 
-    def translateUI(self):
+    def translateUI(self) -> None:
         self.edit_cut_assign.setText(_("Cut and Assign..."))
         self.edit_move_to_include_file.setText(_("Move to Include File..."))
         self.view_highlighting.setText(_("Syntax &Highlighting"))

@@ -20,7 +20,11 @@
 """
 Provides an icon for a Document.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
+
+from PySide6.QtGui import QIcon
 
 import plugin
 import signals
@@ -28,8 +32,12 @@ import job
 import engrave
 import icons
 
+if TYPE_CHECKING:
+    from .mainwindow import MainWindow
+    from .document import EditorDocument
 
-def icon(doc, mainwindow=None):
+
+def icon(doc, mainwindow: Optional[MainWindow] = None) -> QIcon:
     """Provides a QIcon for a Document.
 
     If a MainWindow is provided, the sticky icon can be returned, if the
@@ -43,7 +51,8 @@ class DocumentIconProvider(plugin.DocumentPlugin):
     """Provides an icon for a Document."""
     iconChanged = signals.Signal()
 
-    def __init__(self, doc):
+    # noinspection PyMissingConstructor
+    def __init__(self, doc: EditorDocument):
         doc.modificationChanged.connect(self._send_icon)
         mgr = job.manager.manager(doc)
         mgr.started.connect(self._send_icon)
